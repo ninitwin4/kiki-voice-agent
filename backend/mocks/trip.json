@@ -1,0 +1,54 @@
+{
+  "trip_id": "TRIP-MEI-AUS-0705",
+  "traveler": {
+    "name": "Mei Nakamura",
+    "email": "mei@example.com",
+    "loyalty": "AAdvantage Gold #7XR44P2"
+  },
+  "purpose": "Sister's wedding in Austin — rehearsal dinner tonight at 8:00 PM",
+  "flight": {
+    "record_locator": "KQX4TR",
+    "cabin": "Main Cabin",
+    "fare_paid": 164.20,
+    "rebooked_fare": null,
+    "status": "CANCELLED",
+    "segments": [
+      {
+        "flight_number": "AA 2418",
+        "origin": "SFO",
+        "destination": "AUS",
+        "departure_time": "14:30",
+        "arrival_time": "19:55",
+        "status": "CANCELLED",
+        "cancellation_reason": "Aircraft maintenance"
+      }
+    ]
+  },
+  "hotel": {
+    "name": "Hotel Van Zandt",
+    "confirmation_number": "HVZ-889214",
+    "check_in": "tonight",
+    "nights": 3,
+    "late_checkin": false,
+    "guaranteed_until": "22:00",
+    "status": "AT_RISK",
+    "note": "Reservation auto-releases at 22:00 unless a late arrival is on file"
+  },
+  "transport": {
+    "provider": "Austin Executive Car",
+    "confirmation_number": "AEC-30417",
+    "pickup_location": "AUS Arrivals — Door 4",
+    "pickup_time": "20:05",
+    "status": "AT_RISK",
+    "note": "Pickup is timed to the cancelled AA 2418 arrival"
+  },
+  "dining": {
+    "venue": "Suerte",
+    "event": "Rehearsal dinner",
+    "party_size": 14,
+    "time": "20:00",
+    "status": "AT_RISK",
+    "note": "Mei will miss the 20:00 seating unless the reservation moves"
+  },
+  "payments": []
+}

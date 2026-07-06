@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: kiki-complete-trip
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.5
+      - key: MOCK_MODE
+        value: "true"
+      - key: PAYMENT_MOCK
+        value: "true"
+      - key: MOCK_DELAY_SECONDS
+        value: "1.5"

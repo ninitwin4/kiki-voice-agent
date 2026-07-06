@@ -1,0 +1,80 @@
+{
+  "request": {
+    "origin": "SFO",
+    "destination": "AUS",
+    "date": "tonight",
+    "source": "BargainFinderMax (mock)"
+  },
+  "itineraries": [
+    {
+      "flight_id": "AA1885",
+      "recommended": true,
+      "reason": "Nonstop and lands at 21:45 — in time for a late rehearsal-dinner seating",
+      "cabin": "Main Cabin",
+      "seats_remaining": 5,
+      "totalFare": { "amount": 209.40, "currency": "USD" },
+      "segments": [
+        {
+          "carrier": "AA",
+          "flight_number": "AA 1885",
+          "origin": "SFO",
+          "destination": "AUS",
+          "departure_time": "16:20",
+          "arrival_time": "21:45",
+          "duration": "3h 25m",
+          "aircraft": "737 MAX 8"
+        }
+      ]
+    },
+    {
+      "flight_id": "AA2694",
+      "recommended": false,
+      "reason": "Cheapest option, but a tight DFW connection lands close to midnight",
+      "cabin": "Main Cabin",
+      "seats_remaining": 2,
+      "totalFare": { "amount": 176.10, "currency": "USD" },
+      "segments": [
+        {
+          "carrier": "AA",
+          "flight_number": "AA 2694",
+          "origin": "SFO",
+          "destination": "DFW",
+          "departure_time": "15:10",
+          "arrival_time": "20:35",
+          "duration": "3h 25m",
+          "aircraft": "A321"
+        },
+        {
+          "carrier": "AA",
+          "flight_number": "AA 411",
+          "origin": "DFW",
+          "destination": "AUS",
+          "departure_time": "21:25",
+          "arrival_time": "22:25",
+          "duration": "1h 0m",
+          "aircraft": "E175"
+        }
+      ]
+    },
+    {
+      "flight_id": "AA989",
+      "recommended": false,
+      "reason": "Latest departure and First cabin only — lands after 1 AM",
+      "cabin": "First",
+      "seats_remaining": 3,
+      "totalFare": { "amount": 434.00, "currency": "USD" },
+      "segments": [
+        {
+          "carrier": "AA",
+          "flight_number": "AA 989",
+          "origin": "SFO",
+          "destination": "AUS",
+          "departure_time": "19:55",
+          "arrival_time": "01:10",
+          "duration": "3h 15m",
+          "aircraft": "737-800"
+        }
+      ]
+    }
+  ]
+}
