@@ -1,7 +1,7 @@
 # Kiki — complete-trip demo backend
 
 FastAPI backend for the "Kiki" voice-agent travel demo. It simulates trip-disruption
-recovery with Sabre-shaped mock data: traveler **Mei** is flying SFO→AUS tonight for
+recovery with Sabre-shaped mock data: traveler **KiKi** is flying SFO→AUS tonight for
 her sister's wedding, her flight just got **cancelled**, and the agent recovers the
 whole trip — flight, hotel late check-in, rehearsal dinner, airport pickup, payment.
 
