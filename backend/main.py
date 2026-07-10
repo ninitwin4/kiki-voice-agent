@@ -1,6 +1,6 @@
 """Kiki — voice-agent travel demo backend (project: complete-trip).
 
-Simulates trip-disruption recovery for traveler Mei (SFO→AUS tonight for her
+Simulates trip-disruption recovery for traveler Mary (SFO→AUS tonight for her
 sister's wedding) with Sabre-shaped mock data. All state lives in a single
 in-memory TRIP object; POST /demo/reset restores the initial fixture so the
 demo can be rehearsed repeatedly.
@@ -247,7 +247,7 @@ async def not_implemented_handler(request: Request, exc: NotImplementedError) ->
 
 @app.post("/trip/status", response_model=TripStatusOut)
 async def trip_status() -> dict:
-    """Get Mei's full trip itinerary with the current status of the flight, hotel, airport pickup, and rehearsal dinner."""
+    """Get Mary's full trip itinerary with the current status of the flight, hotel, airport pickup, and rehearsal dinner."""
     if not config.MOCK_MODE:
         return sabre_client.get_trip_status()
     return TRIP
@@ -263,7 +263,7 @@ async def flights_search() -> dict:
 
 @app.post("/flights/rebook", response_model=RebookOut)
 async def flights_rebook(body: RebookIn) -> dict:
-    """Rebook Mei onto the chosen alternative flight by flight_id and return the confirmation and price difference."""
+    """Rebook Mary onto the chosen alternative flight by flight_id and return the confirmation and price difference."""
     if not config.MOCK_MODE:
         return sabre_client.rebook_flight(flight_id=body.flight_id)
 
@@ -308,7 +308,7 @@ async def flights_rebook(body: RebookIn) -> dict:
 
 @app.post("/hotel/adjust", response_model=HotelAdjustOut)
 async def hotel_adjust(body: HotelAdjustIn | None = None) -> dict:
-    """Flag a late check-in on Mei's hotel reservation so the room is held past the release time."""
+    """Flag a late check-in on Mary's hotel reservation so the room is held past the release time."""
     if not config.MOCK_MODE:
         return sabre_client.adjust_hotel(
             late_checkin=body.late_checkin if body else True,
@@ -339,7 +339,7 @@ async def dining_move(body: DiningMoveIn) -> dict:
 
     TRIP["dining"]["time"] = body.new_time
     TRIP["dining"]["status"] = "CONFIRMED"
-    TRIP["dining"]["note"] = f"Moved to {body.new_time} for Mei's late arrival"
+    TRIP["dining"]["note"] = f"Moved to {body.new_time} for Mary's late arrival"
     return {
         "confirmed": True,
         "message": (
@@ -352,7 +352,7 @@ async def dining_move(body: DiningMoveIn) -> dict:
 
 @app.post("/transport/update", response_model=TransportUpdateOut)
 async def transport_update(body: TransportUpdateIn) -> dict:
-    """Re-time Mei's airport pickup to match the new flight arrival and return the confirmation."""
+    """Re-time Mary's airport pickup to match the new flight arrival and return the confirmation."""
     if not config.MOCK_MODE:
         return sabre_client.update_transport(
             new_pickup_time=body.new_pickup_time, flight_number=body.flight_number
@@ -401,7 +401,7 @@ async def payment_confirm(body: PaymentIn) -> dict:
 
 @app.post("/demo/reset", response_model=ResetOut)
 async def demo_reset() -> dict:
-    """Reset the demo to its initial state, with Mei's original flight cancelled and everything else at risk."""
+    """Reset the demo to its initial state, with Mary's original flight cancelled and everything else at risk."""
     TRIP.clear()
     TRIP.update(copy.deepcopy(_INITIAL_TRIP))
     return {"reset": True, "message": "Trip restored to initial state: AA 2418 is CANCELLED again."}

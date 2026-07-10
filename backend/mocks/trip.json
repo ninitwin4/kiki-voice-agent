@@ -1,8 +1,8 @@
 {
-  "trip_id": "TRIP-MEI-AUS-0705",
+  "trip_id": "TRIP-MARY-AUS-0705",
   "traveler": {
-    "name": "Mei Nakamura",
-    "email": "mei@example.com",
+    "name": "Mary Nakamura",
+    "email": "mary@example.com",
     "loyalty": "AAdvantage Gold #7XR44P2"
   },
   "purpose": "Sister's wedding in Austin — rehearsal dinner tonight at 8:00 PM",
@@ -48,7 +48,7 @@
     "party_size": 14,
     "time": "20:00",
     "status": "AT_RISK",
-    "note": "Mei will miss the 20:00 seating unless the reservation moves"
+    "note": "Mary will miss the 20:00 seating unless the reservation moves"
   },
   "payments": []
 }
