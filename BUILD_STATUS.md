@@ -21,24 +21,20 @@
 
 ---
 
-## 🔴 CURRENT BLOCKER — voice model won't produce audio (Background AI ON)
+## ✅ RESOLVED — voice + 3 core tools working end-to-end (session `97191572`, 2026-07-10)
 
-**Symptom:** With Background AI **ON**, the voice agent wouldn't speak at all (no greeting). With Background AI **OFF**, Kiki talks fine — but can't fetch data or complete a booking (no tool calls fire).
+**The fix:** the foreground voice model **`gpt-realtime-1.5` was broken** (516 `realtime_model_error`, zero audio — session `8c9e552e`). **Switching to `gpt-realtime-2` fixed it** — next run had **0 errors** and a full 266s voice conversation.
 
-**Root cause (from session `8c9e552e`, 2026-07-10):** the failure is the **foreground voice model**, not tool-calling. The agent connected (`initializing → listening`) and tried to speak the greeting **15×**, but every attempt threw `realtime_model_error` — **516 errors** from **OpenAI `gpt-realtime-1.5`** over 74s. Result: `transcript: []`, `message_count: 0`, zero audio. **The custom tools were never reached** — so the "9 tools / token-mint / tool-URL" theories below are NOT what broke this run. This looks like an OpenAI Realtime **quota / API-key / model-access / outage** problem on the voice layer.
+**How VB actually runs your tools (confirmed):** the foreground voice model (OpenAI realtime) does NOT call Custom API tools directly. It calls a built-in **`submit_background_query`**, which hands off to **Background AI (Claude)**, which executes your REST tools against Render. → **Background AI must be ON** (with it OFF, only built-ins `end_call`/`put_on_hold`/`resume_from_hold`/`trigger_client_action` exist, and `get_trip_status` errors as "Unknown function").
 
-**Fix the voice model first (in this order):**
-1. **Retry once** — rules out a transient OpenAI Realtime outage.
-2. **Agent settings → Model/voice** — try a **different voice model** than `gpt-realtime-1.5`; if the alternate speaks, it's model-access/quota on that model.
-3. **OpenAI API key / credit** — if VB uses your own OpenAI key, confirm it's valid, funded, and has Realtime access. If VB manages the key, check free-tier realtime-minute limits (note the "Upgrade" button).
+**Verified live in one call:** greeting → `get_trip_status` (flight cancelled) → `search_flights` (recommends AA1885) → asks for verbal "yes" → `rebook_flight` (confirmed, +$45.20). Exactly the intended flow.
 
-**Only once the greeting plays** do the tool-calling concerns below apply:
-- **Token minting** — browser needs a short-lived session token, minted server-side:
-  `POST https://vocalbridgeai.com/api/v1/token` · headers `X-API-Key`, `X-Agent-Id`, `Content-Type: application/json` · body `{"participant_name":"Web User"}` → `{ token, connection_url, ... }`. A missing `X-Agent-Id` is a suspect. *(Not the cause of this run — the model failed before any tool call.)*
-- **Tool URL** — endpoints are already public HTTPS on Render (**deploy is DONE**), not `localhost`. ✅ resolved.
-- **Tool count** — Chatty is documented as best for 1–2 tools; Kiki has 9. Watch for flaky tool-calling *after* the voice model works → if so, Plan B.
+**Notes / minor polish:**
+- `search_flights` returns `totalFare` but no original fare, so the price *difference* only comes from `rebook_flight` (45.20). Kiki narrated this correctly — no fix needed.
+- STT (`gpt-realtime-whisper`) mis-hears the trigger occasionally ("flight cancelled" → "friend got cancer"). Speak the cue clearly in the demo.
+- `end_call` is disabled → enable the **Hang up** capability if you want Kiki to end the call herself.
 
-**→ If, once voice works, the 9 Custom API tools stay flaky, switch to AI Agent mode (Plan B below).**
+**Still on the table if 9 tools get flaky later:** AI Agent mode (Plan B below).
 
 ---
 
@@ -63,10 +59,10 @@
 ## ⬜ Next up (in order)
 - [x] **Deploy backend to Render** → **live at https://kiki-complete-trip.onrender.com** (auto-deploys on `git push`; `/health` 200 + full flow verified via curl)
       *(free tier sleeps ~30–50s after idle — warm it with one `/trip/status` call before any rehearsal/demo)*
-- [x] Wire 3 core tools in Vocal Bridge: `get_trip_status`, `search_flights`, `rebook_flight` (POST, No auth, pointed at the Render URL; see [`TOOL_WIRING.md`](TOOL_WIRING.md)) — configured, not yet verified live (blocked below)
-- [ ] **Unblock the voice model** (see CURRENT BLOCKER) — no greeting/audio until `gpt-realtime-1.5` runs
-- [ ] First end-to-end voice run: "My flight got cancelled — fix my trip"
-- [ ] If still flaky → **switch to AI Agent mode (Plan B)**
+- [x] Wire 3 core tools in Vocal Bridge: `get_trip_status`, `search_flights`, `rebook_flight` (POST, No auth, Render URL; see [`TOOL_WIRING.md`](TOOL_WIRING.md)) — **verified live**
+- [x] **Voice model fixed** — switched `gpt-realtime-1.5` → `gpt-realtime-2` (Agent settings); 0 errors
+- [x] First end-to-end voice run: "My flight got cancelled — fix my trip" ✅ (session `97191572`)
+- [ ] If 9 tools get flaky → **switch to AI Agent mode (Plan B)**
 - [ ] Wire remaining 6 tools (hotel, dining, transport, payment)
 - [ ] **Full 9-tool test pass** — every tool fires + AT_RISK items flip to rescued in `/trip/status`
 
@@ -92,7 +88,9 @@
 ---
 
 ## Key learnings
-- **Background AI = the tool-calling engine.** OFF → agent talks but can't use tools. ON → required for Custom API tools. OFF only for AI Agent mode.
+- **Voice model matters.** `gpt-realtime-1.5` threw 516 realtime errors (no audio); `gpt-realtime-2` works cleanly. If the agent won't speak, swap the voice model in Agent settings before debugging anything else.
+- **Tool-call path:** foreground realtime model → built-in `submit_background_query` → Background AI (Claude) → your Custom API tools → Render. That's why Background AI must be ON.
+- **Background AI = the tool-calling engine.** OFF → agent talks but only has built-ins (`end_call`, `put_on_hold`, `resume_from_hold`, `trigger_client_action`); your custom tools return "Unknown function." ON → required for Custom API tools. OFF only for AI Agent mode.
 - **Agents hallucinate rather than call tools** unless the prompt explicitly forbids it. Kiki's prompt must say: *"Never invent flights, times, or prices — always call a tool."* (Learned the hard way on the weather practice agent.)
 - **Bridge lines beat silence.** Instruct the agent to say a short line the moment a query is delegated — *"hang on, checking…"* — because tool calls take 1–6s. Per the VB course: *"that's the difference between feeling fast and feeling broken."* Real Sabre will be slower than our 1.5s mock.
 - **Chatty style is documented as best for 1–2 tools.** Kiki has 9. If tool-calling is unreliable, this is a likely cause → Plan B.
