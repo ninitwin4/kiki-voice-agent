@@ -14,6 +14,31 @@ are verified against the running API, not guessed.
 
 ---
 
+## All 8 tools at a glance (copy-paste)
+
+Every one is **POST** + **No auth**. Only 3 take parameters — and every parameter
+goes in the **body**, never `query`.
+
+| # | Tool name | Full URL | Parameters |
+|---|---|---|---|
+| 1 | `get_trip_status` | `https://kiki-complete-trip.onrender.com/trip/status` | — |
+| 2 | `search_flights` | `https://kiki-complete-trip.onrender.com/flights/search` | `month` *(optional)* |
+| 3 | `book_flight` | `https://kiki-complete-trip.onrender.com/flights/book` | `flight_id` **required** |
+| 4 | `book_hotel` | `https://kiki-complete-trip.onrender.com/hotel/adjust` | — |
+| 5 | `book_transport` | `https://kiki-complete-trip.onrender.com/transport/update` | — |
+| 6 | `book_activities` | `https://kiki-complete-trip.onrender.com/activities/book` | `activity` *(optional)* |
+| 7 | `change_trip_dates` | `https://kiki-complete-trip.onrender.com/trip/rebook` | `month` **required** |
+| 8 | `confirm_payment` | `https://kiki-complete-trip.onrender.com/payment/confirm` | `amount` *(optional)* |
+
+⚠️ **Adding tools in the VB editor:** click **+ Add API tool** → **Save immediately** →
+*then* fill the fields → Save again. Saving right after adding forces VB to assign the
+internal `id`; skipping it triggers `APITool id Field required` and makes the
+Parameters panel vanish from every card.
+
+Per-tool descriptions and response fields are below.
+
+---
+
 ## The demo: Maui group trip
 
 5 travelers (2 couples + 1 child), SFO⇄OGG. The group plans the **first week of
@@ -27,14 +52,14 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
 ## Phase 1 — core tools
 
 ### 1. `get_trip_status`
-- **URL:** `.../trip/status` · **Body:** none (`{}`)
+- **URL:** `https://kiki-complete-trip.onrender.com/trip/status` · **Body:** none (`{}`)
 - **Description:**
   > Get the group's full Maui trip plan: dates, party, flights, hotel, transport, activities, running total, and whether it fits the budget. Call this first to see where the trip stands.
 - **Kiki reads back:** `month`, `dates.label`, each vendor's `status`, and
   `totals.trip_total` / `totals.within_budget` / `totals.over_budget_by`.
 
 ### 2. `search_flights`
-- **URL:** `.../flights/search`
+- **URL:** `https://kiki-complete-trip.onrender.com/flights/search`
 - **Body — one optional param:**
   - `month` · string · **body** · *not required* — `august` or `october`. Omit to use the trip's current month.
 - **Description:**
@@ -44,7 +69,7 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
   Exactly one option has `recommended: true`.
 
 ### 3. `book_flight`
-- **URL:** `.../flights/book`
+- **URL:** `https://kiki-complete-trip.onrender.com/flights/book`
 - **Body — one required param:**
   - `flight_id` · string · **body** · **required** — from `search_flights`, e.g. `UA1155`
 - **Description:**
@@ -52,19 +77,19 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
 - **Kiki reads back:** `record_locator`, `flights.total_price`, `totals.trip_total`.
 
 ### 4. `book_hotel`
-- **URL:** `.../hotel/adjust` · **Body:** none (`{}`)
+- **URL:** `https://kiki-complete-trip.onrender.com/hotel/adjust` · **Body:** none (`{}`)
 - **Description:**
   > Book the two resort rooms on Maui for the trip's current dates. Returns the confirmation number and total.
 - **Kiki reads back:** `hotel.name`, `hotel.check_in`/`check_out`, `hotel.total`.
 
 ### 5. `book_transport`
-- **URL:** `.../transport/update` · **Body:** none (`{}`)
+- **URL:** `https://kiki-complete-trip.onrender.com/transport/update` · **Body:** none (`{}`)
 - **Description:**
   > Book the minivan with a child car seat at Maui airport (OGG) for the trip's current dates. Returns the confirmation and total.
 - **Kiki reads back:** `transport.vehicle`, `transport.pickup_date`, `transport.total`.
 
 ### 6. `book_activities`
-- **URL:** `.../activities/book`
+- **URL:** `https://kiki-complete-trip.onrender.com/activities/book`
 - **Body — one optional param:**
   - `activity` · string · **body** · *not required* — `surf` or `snorkel`. **Omit to book both.**
 - **Description:**
@@ -72,7 +97,7 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
 - **Kiki reads back:** each item's `name`, `date`, `time`, `total`.
 
 ### 7. `change_trip_dates` ⭐ the money shot
-- **URL:** `.../trip/rebook`
+- **URL:** `https://kiki-complete-trip.onrender.com/trip/rebook`
 - **Body — one required param:**
   - `month` · string · **body** · **required** — `august` or `october`
 - **Description:**
@@ -82,7 +107,7 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
   tier (A/B/C) to the equivalent option in the new month.
 
 ### 8. `confirm_payment`
-- **URL:** `.../payment/confirm`
+- **URL:** `https://kiki-complete-trip.onrender.com/payment/confirm`
 - **Body — both optional:**
   - `amount` · number · **body** · *not required* — **omit to charge the trip's current total**
   - `currency` · string · **body** · *not required* — defaults to `USD`
@@ -90,7 +115,7 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
   > Charge the card on file for the trip total and return a payment confirmation code. Requires explicit verbal user confirmation before calling.
 
 ### 9. `reset_demo` (operator tool — optional)
-- **URL:** `.../demo/reset` · **Body:** none (`{}`)
+- **URL:** `https://kiki-complete-trip.onrender.com/demo/reset` · **Body:** none (`{}`)
 - Restores the initial August-planning state. Easiest run from the terminal
   between rehearsals rather than wiring it as a voice tool:
   ```bash
