@@ -110,7 +110,7 @@ BASE=https://kiki-complete-trip.onrender.com   # or http://127.0.0.1:8000
 curl -s -X POST $BASE/demo/reset | jq
 curl -s -X POST $BASE/trip/status | jq '.totals'
 curl -s -X POST $BASE/flights/search -H 'Content-Type: application/json' -d '{"month":"august"}' | jq '.options[] | {tier, flight_no, stops, price_pp, tradeoff}'
-curl -s -X POST $BASE/flights/book -H 'Content-Type: application/json' -d '{"flight_id":"UA1155"}' | jq '.message'
+curl -s -X POST $BASE/flights/book -H 'Content-Type: application/json' -d '{"flight_id":"AA289"}' | jq '.message'
 curl -s -X POST $BASE/hotel/adjust | jq '.message'
 curl -s -X POST $BASE/transport/update | jq '.message'
 curl -s -X POST $BASE/activities/book | jq '.message'

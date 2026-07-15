@@ -6,8 +6,8 @@ Two paths matter:
 """
 import pytest
 
-AUG_FLIGHT_IDS = {"UA1155", "HA1024", "AS0862"}
-OCT_FLIGHT_IDS = {"UA1187", "HA1032", "AS0874"}
+AUG_FLIGHT_IDS = {"AA289", "AA1412", "AA674"}
+OCT_FLIGHT_IDS = {"AA293", "AA1428", "AA682"}
 
 
 def test_full_demo_happy_path_august(client):
@@ -38,7 +38,7 @@ def test_full_demo_happy_path_august(client):
     recommended = [o for o in search["options"] if o["recommended"]]
     assert len(recommended) == 1
     best = recommended[0]
-    assert best["flight_id"] == "UA1155"
+    assert best["flight_id"] == "AA289"
     assert best["stops"] == 0
 
     # 3. Book the recommended flight for all 5.
@@ -99,7 +99,7 @@ def test_full_demo_happy_path_august(client):
 
 def test_rebook_august_to_october_cascades_every_vendor(client):
     # Book the whole trip in August first.
-    client.post("/flights/book", json={"flight_id": "UA1155"})
+    client.post("/flights/book", json={"flight_id": "AA289"})
     client.post("/hotel/adjust")
     client.post("/transport/update")
     client.post("/activities/book")
@@ -124,7 +124,7 @@ def test_rebook_august_to_october_cascades_every_vendor(client):
     assert body["dates"]["end"] == "2026-10-12"
 
     assert body["flights"]["status"] == "BOOKED"
-    assert body["flights"]["flight_id"] == "UA1187"  # same tier A, October equivalent
+    assert body["flights"]["flight_id"] == "AA293"  # same tier A, October equivalent
     assert body["flights"]["tier"] == "A"
     assert body["flights"]["total_price"] == pytest.approx(2980.0)
 
@@ -152,7 +152,7 @@ def test_rebook_august_to_october_cascades_every_vendor(client):
     after = client.post("/trip/status").json()
     assert after["month"] == "october"
     assert after["dates"]["season"] == "shoulder"
-    assert after["flights"]["flight_id"] == "UA1187"
+    assert after["flights"]["flight_id"] == "AA293"
     assert after["hotel"]["check_in"] == "2026-10-05"
     assert after["totals"]["trip_total"] == pytest.approx(body["totals"]["trip_total"])
 
@@ -210,7 +210,7 @@ def test_book_single_activity_marks_partial(client):
 
 
 def test_reset_restores_initial_august_planning_state(client):
-    client.post("/flights/book", json={"flight_id": "UA1155"})
+    client.post("/flights/book", json={"flight_id": "AA289"})
     client.post("/hotel/adjust")
     client.post("/trip/rebook", json={"month": "october"})
     client.post("/payment/confirm", json={})
@@ -233,7 +233,7 @@ def test_reset_restores_initial_august_planning_state(client):
 def test_book_unknown_flight_id_is_404(client):
     resp = client.post("/flights/book", json={"flight_id": "UA999"})
     assert resp.status_code == 404
-    assert "UA1155" in resp.json()["detail"]
+    assert "AA289" in resp.json()["detail"]
 
 
 def test_rebook_unknown_month_is_404(client):

@@ -71,7 +71,7 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
 ### 3. `book_flight`
 - **URL:** `https://kiki-complete-trip.onrender.com/flights/book`
 - **Body — one required param:**
-  - `flight_id` · string · **body** · **required** — from `search_flights`, e.g. `UA1155`
+  - `flight_id` · string · **body** · **required** — from `search_flights`, e.g. `AA289`
 - **Description:**
   > Book all 5 travelers onto a chosen flight by flight_id. Requires explicit verbal user confirmation before calling. Returns the record locator and updated trip total.
 - **Kiki reads back:** `record_locator`, `flights.total_price`, `totals.trip_total`.
@@ -128,8 +128,8 @@ and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
 
 ```
 POST /demo/reset       {}                      -> planning first week of August, $15,356 (over by $3,356)
-POST /flights/search   {"month":"august"}      -> A UA1155 nonstop $782pp ★ | B HA24 1-stop $648pp | C AS862 ret 06:05
-POST /flights/book     {"flight_id":"UA1155"}  -> PNR-…, $3,910
+POST /flights/search   {"month":"august"}      -> A AA289 nonstop $782pp ★ | B AA1412 1-stop $648pp | C AA674 ret 06:05
+POST /flights/book     {"flight_id":"AA289"}  -> PNR-…, $3,910
 POST /hotel/adjust     {}                      -> Westin Maui, 2 rooms, 08-03→08-10, $9,590
 POST /transport/update {}                      -> Sienna minivan + car seat @ OGG, $686
 POST /activities/book  {}                      -> surf 08-04 $475 + Molokini 08-06 $695

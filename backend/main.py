@@ -350,7 +350,7 @@ class FlightSearchOut(BaseModel):
 
 
 class FlightBookIn(BaseModel):
-    flight_id: str = Field(..., description="flight_id from /flights/search, e.g. 'UA1155'")
+    flight_id: str = Field(..., description="flight_id from /flights/search, e.g. 'AA289'")
 
 
 class FlightBookOut(BaseModel):
