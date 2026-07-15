@@ -1,0 +1,116 @@
+{
+  "august": {
+    "label": "first week of August",
+    "season": "peak",
+    "dates": {
+      "start": "2026-08-03",
+      "end": "2026-08-10",
+      "nights": 7
+    },
+    "hotel": {
+      "name": "The Westin Maui Resort & Spa, Ka'anapali",
+      "room_type": "Ocean-view double queen",
+      "rooms": 2,
+      "nightly_rate": 685.0,
+      "nights": 7,
+      "total": 9590.0,
+      "note": "Two rooms — one per couple; the child shares with parents. Rollaway included."
+    },
+    "transport": {
+      "provider": "Maui Family Car Rentals",
+      "vehicle": "Toyota Sienna minivan (seats 7)",
+      "pickup_location": "OGG — Kahului Airport",
+      "car_seat": true,
+      "car_seat_fee_per_day": 9.0,
+      "daily_rate": 89.0,
+      "days": 7,
+      "total": 686.0,
+      "note": "One minivan for all 5, plus a forward-facing child car seat."
+    },
+    "activities": [
+      {
+        "activity_id": "surf",
+        "name": "Beginner group surfing lesson",
+        "provider": "Maui Surf School — Lahaina",
+        "kid_friendly": true,
+        "date": "2026-08-04",
+        "time": "09:00",
+        "duration": "2h",
+        "price_pp": 95.0,
+        "participants": 5,
+        "total": 475.0,
+        "note": "Beginner group lesson; instructors certified for ages 5+. Boards and rash guards included."
+      },
+      {
+        "activity_id": "snorkel",
+        "name": "Molokini Crater snorkeling tour",
+        "provider": "Molokini Express — Ma'alaea Harbor",
+        "kid_friendly": true,
+        "date": "2026-08-06",
+        "time": "07:00",
+        "duration": "4h 30m",
+        "price_pp": 139.0,
+        "participants": 5,
+        "total": 695.0,
+        "note": "Morning catamaran to the crater; flotation gear and kid life vests included."
+      }
+    ]
+  },
+  "october": {
+    "label": "first week of October",
+    "season": "shoulder",
+    "dates": {
+      "start": "2026-10-05",
+      "end": "2026-10-12",
+      "nights": 7
+    },
+    "hotel": {
+      "name": "The Westin Maui Resort & Spa, Ka'anapali",
+      "room_type": "Ocean-view double queen",
+      "rooms": 2,
+      "nightly_rate": 512.0,
+      "nights": 7,
+      "total": 7168.0,
+      "note": "Same two ocean-view rooms at shoulder-season rates — $173 per room per night less than August."
+    },
+    "transport": {
+      "provider": "Maui Family Car Rentals",
+      "vehicle": "Toyota Sienna minivan (seats 7)",
+      "pickup_location": "OGG — Kahului Airport",
+      "car_seat": true,
+      "car_seat_fee_per_day": 9.0,
+      "daily_rate": 71.0,
+      "days": 7,
+      "total": 560.0,
+      "note": "One minivan for all 5, plus a forward-facing child car seat."
+    },
+    "activities": [
+      {
+        "activity_id": "surf",
+        "name": "Beginner group surfing lesson",
+        "provider": "Maui Surf School — Lahaina",
+        "kid_friendly": true,
+        "date": "2026-10-06",
+        "time": "09:00",
+        "duration": "2h",
+        "price_pp": 89.0,
+        "participants": 5,
+        "total": 445.0,
+        "note": "Beginner group lesson; instructors certified for ages 5+. Boards and rash guards included."
+      },
+      {
+        "activity_id": "snorkel",
+        "name": "Molokini Crater snorkeling tour",
+        "provider": "Molokini Express — Ma'alaea Harbor",
+        "kid_friendly": true,
+        "date": "2026-10-08",
+        "time": "07:00",
+        "duration": "4h 30m",
+        "price_pp": 129.0,
+        "participants": 5,
+        "total": 645.0,
+        "note": "Morning catamaran to the crater; flotation gear and kid life vests included. Calmer seas than August."
+      }
+    ]
+  }
+}

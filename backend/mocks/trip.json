@@ -1,54 +1,33 @@
 {
-  "trip_id": "TRIP-MARY-AUS-0705",
-  "traveler": {
-    "name": "Mary Nakamura",
-    "email": "mary@example.com",
-    "loyalty": "AAdvantage Gold #7XR44P2"
-  },
-  "purpose": "Sister's wedding in Austin — rehearsal dinner tonight at 8:00 PM",
-  "flight": {
-    "record_locator": "KQX4TR",
-    "cabin": "Main Cabin",
-    "fare_paid": 164.20,
-    "rebooked_fare": null,
-    "status": "CANCELLED",
-    "segments": [
-      {
-        "flight_number": "AA 2418",
-        "origin": "SFO",
-        "destination": "AUS",
-        "departure_time": "14:30",
-        "arrival_time": "19:55",
-        "status": "CANCELLED",
-        "cancellation_reason": "Aircraft maintenance"
-      }
+  "trip_id": "TRIP-MAUI-2026",
+  "trip_name": "Maui group trip — 2 couples + 1 child",
+  "status": "PLANNING",
+  "month": "august",
+  "origin": "SFO",
+  "destination": "OGG",
+  "party": {
+    "adults": 4,
+    "children": 1,
+    "total": 5,
+    "rooms": 2,
+    "note": "Two couples plus one five-year-old. Two rooms; the child shares with parents.",
+    "travelers": [
+      { "name": "Nina Reyes", "type": "adult" },
+      { "name": "Marcus Reyes", "type": "adult" },
+      { "name": "Priya Shah", "type": "adult" },
+      { "name": "Dev Shah", "type": "adult" },
+      { "name": "Ollie Shah", "type": "child", "age": 5 }
     ]
   },
-  "hotel": {
-    "name": "Hotel Van Zandt",
-    "confirmation_number": "HVZ-889214",
-    "check_in": "tonight",
-    "nights": 3,
-    "late_checkin": false,
-    "guaranteed_until": "22:00",
-    "status": "AT_RISK",
-    "note": "Reservation auto-releases at 22:00 unless a late arrival is on file"
+  "budget": {
+    "amount": 12000.0,
+    "currency": "USD",
+    "note": "All-in group budget for 5 travelers across flights, hotel, transport, and activities."
   },
-  "transport": {
-    "provider": "Austin Executive Car",
-    "confirmation_number": "AEC-30417",
-    "pickup_location": "AUS Arrivals — Door 4",
-    "pickup_time": "20:05",
-    "status": "AT_RISK",
-    "note": "Pickup is timed to the cancelled AA 2418 arrival"
+  "preferences": {
+    "no_early_return": true,
+    "note": "The group has ruled out pre-dawn return flights — nothing departing OGG before about 10 AM on the way home."
   },
-  "dining": {
-    "venue": "Suerte",
-    "event": "Rehearsal dinner",
-    "party_size": 14,
-    "time": "20:00",
-    "status": "AT_RISK",
-    "note": "Mary will miss the 20:00 seating unless the reservation moves"
-  },
+  "constraint": "The first week of August is peak season on Maui. The full August package prices out around $15,356 — roughly $3,356 over the group's $12,000 budget. The same trip in the first week of October (shoulder season) comes in near $11,798, inside budget.",
   "payments": []
 }

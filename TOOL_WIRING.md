@@ -1,79 +1,125 @@
 # TOOL_WIRING — Kiki (Vocal Bridge / Chatty)
 
 Copy-paste reference for wiring Kiki's tools to the live backend. Values below
-are verified against production, not guessed.
+are verified against the running API, not guessed.
 
 - **Live base URL:** `https://kiki-complete-trip.onrender.com`
-- **All endpoints:** `POST`, `Content-Type: application/json`.
+- **All endpoints:** `POST`, `Content-Type: application/json`, **No auth**.
+- **All parameters go in the `body`** (never `query`) — the backend reads JSON bodies.
 - **GitHub repo:** `kiki-voice-agent` · **Render service:** `kiki-complete-trip`
-  (the service name is *not* the repo name — don't let that trip you up in the dashboards).
-- Free tier sleeps after idle. **Warm it before a rehearsal/demo** with one
+- Free tier sleeps after idle. **Warm it before a rehearsal** with one
   `get_trip_status` call (~30–50s cold start on the first hit).
+- **Background AI must be ON** — it's the layer that actually executes these tools.
+- Voice model: **`gpt-realtime-2`** (`gpt-realtime-1.5` is broken — no audio).
 
 ---
 
-## Phase 1 — the 3 core tools
+## The demo: Maui group trip
 
-Wire these three first, then do the first voice run before adding the rest.
+5 travelers (2 couples + 1 child), SFO⇄OGG. The group plans the **first week of
+August**, discovers it's **$3,356 over their $12,000 budget** (peak season), and
+Kiki moves the whole trip to the **first week of October** — one call re-dates
+and re-prices flights, hotel, minivan, and both activities, landing at **$11,798
+(within budget, saving $3,558)**.
+
+---
+
+## Phase 1 — core tools
 
 ### 1. `get_trip_status`
-- **Method / URL:** `POST https://kiki-complete-trip.onrender.com/trip/status`
-- **Request body:** none — send an empty object `{}`
-- **Description (paste as tool description):**
-  > Get the traveler's full trip itinerary with the current status of the flight, hotel, airport pickup, and rehearsal dinner. Call this first when the user reports a problem, to assess impact.
-- **What Kiki reads back:** `flight.status` (e.g. `CANCELLED`), and the
-  `hotel.status` / `transport.status` / `dining.status` (each `AT_RISK` until its own tool fires).
+- **URL:** `.../trip/status` · **Body:** none (`{}`)
+- **Description:**
+  > Get the group's full Maui trip plan: dates, party, flights, hotel, transport, activities, running total, and whether it fits the budget. Call this first to see where the trip stands.
+- **Kiki reads back:** `month`, `dates.label`, each vendor's `status`, and
+  `totals.trip_total` / `totals.within_budget` / `totals.over_budget_by`.
 
 ### 2. `search_flights`
-- **Method / URL:** `POST https://kiki-complete-trip.onrender.com/flights/search`
-- **Request body:** none — send an empty object `{}`
-- **Description (paste as tool description):**
-  > Search alternative flights after a disruption. Call ONLY after a cancellation is confirmed, never for initial booking.
-- **What Kiki reads back:** from `itineraries[]`, the item where `recommended: true`
-  (currently `flight_id: "AA1885"`), plus its `reason` and `totalFare.amount`.
+- **URL:** `.../flights/search`
+- **Body — one optional param:**
+  - `month` · string · **body** · *not required* — `august` or `october`. Omit to use the trip's current month.
+- **Description:**
+  > Search SFO to Maui (OGG) flights for 5 travelers and return three priced options, each with a tradeoff to read aloud. Call after the traveler asks about flights or dates.
+- **Kiki reads back:** for each option — `carrier`, `flight_no`, `stops`,
+  `price_pp`, `total_price`, and the **`tradeoff`** string (written to be spoken verbatim).
+  Exactly one option has `recommended: true`.
 
-### 3. `rebook_flight`
-- **Method / URL:** `POST https://kiki-complete-trip.onrender.com/flights/rebook`
-- **Request body (ONE required string param):**
-  ```json
-  { "flight_id": "AA1885" }
+### 3. `book_flight`
+- **URL:** `.../flights/book`
+- **Body — one required param:**
+  - `flight_id` · string · **body** · **required** — from `search_flights`, e.g. `UA1155`
+- **Description:**
+  > Book all 5 travelers onto a chosen flight by flight_id. Requires explicit verbal user confirmation before calling. Returns the record locator and updated trip total.
+- **Kiki reads back:** `record_locator`, `flights.total_price`, `totals.trip_total`.
+
+### 4. `book_hotel`
+- **URL:** `.../hotel/adjust` · **Body:** none (`{}`)
+- **Description:**
+  > Book the two resort rooms on Maui for the trip's current dates. Returns the confirmation number and total.
+- **Kiki reads back:** `hotel.name`, `hotel.check_in`/`check_out`, `hotel.total`.
+
+### 5. `book_transport`
+- **URL:** `.../transport/update` · **Body:** none (`{}`)
+- **Description:**
+  > Book the minivan with a child car seat at Maui airport (OGG) for the trip's current dates. Returns the confirmation and total.
+- **Kiki reads back:** `transport.vehicle`, `transport.pickup_date`, `transport.total`.
+
+### 6. `book_activities`
+- **URL:** `.../activities/book`
+- **Body — one optional param:**
+  - `activity` · string · **body** · *not required* — `surf` or `snorkel`. **Omit to book both.**
+- **Description:**
+  > Book the group's Maui experiences — a kid-friendly beginner surfing lesson and the Molokini snorkeling tour — for the trip's current dates. Omit the activity parameter to book both at once.
+- **Kiki reads back:** each item's `name`, `date`, `time`, `total`.
+
+### 7. `change_trip_dates` ⭐ the money shot
+- **URL:** `.../trip/rebook`
+- **Body — one required param:**
+  - `month` · string · **body** · **required** — `august` or `october`
+- **Description:**
+  > Move the entire trip to a different month. This re-dates and re-prices the flights, hotel, minivan, and activities together in one step. Requires explicit verbal user confirmation before calling.
+- **Kiki reads back:** `message`, `savings`, `totals.trip_total`, `totals.within_budget`.
+- **Note:** anything already booked **stays booked** — a booked flight carries its
+  tier (A/B/C) to the equivalent option in the new month.
+
+### 8. `confirm_payment`
+- **URL:** `.../payment/confirm`
+- **Body — both optional:**
+  - `amount` · number · **body** · *not required* — **omit to charge the trip's current total**
+  - `currency` · string · **body** · *not required* — defaults to `USD`
+- **Description:**
+  > Charge the card on file for the trip total and return a payment confirmation code. Requires explicit verbal user confirmation before calling.
+
+### 9. `reset_demo` (operator tool — optional)
+- **URL:** `.../demo/reset` · **Body:** none (`{}`)
+- Restores the initial August-planning state. Easiest run from the terminal
+  between rehearsals rather than wiring it as a voice tool:
+  ```bash
+  curl -s -X POST https://kiki-complete-trip.onrender.com/demo/reset
   ```
-  - `flight_id` (string, required) — the `flight_id` from `search_flights`, e.g. `AA1885`.
-- **Description (paste as tool description):**
-  > Rebook onto a chosen flight. Requires explicit verbal user confirmation before calling. Returns confirmation and price difference.
-- **What Kiki reads back:** `confirmed` (true), `price_difference` + `currency`
-  (e.g. `45.20 USD`), and `message`.
 
 ---
 
-## Verified live sample (captured from production)
+## Verified live sample
 
 ```
-POST /trip/status   {}                       -> flight CANCELLED; hotel/transport/dining AT_RISK
-POST /flights/search {}                       -> AA1885 (recommended, $209.40), AA2694 ($176.10), AA989 ($434.00)
-POST /flights/rebook {"flight_id":"AA1885"}   -> confirmed:true, price_difference:45.20 USD
+POST /demo/reset       {}                      -> planning first week of August, $15,356 (over by $3,356)
+POST /flights/search   {"month":"august"}      -> A UA1155 nonstop $782pp ★ | B HA24 1-stop $648pp | C AS862 ret 06:05
+POST /flights/book     {"flight_id":"UA1155"}  -> PNR-…, $3,910
+POST /hotel/adjust     {}                      -> Westin Maui, 2 rooms, 08-03→08-10, $9,590
+POST /transport/update {}                      -> Sienna minivan + car seat @ OGG, $686
+POST /activities/book  {}                      -> surf 08-04 $475 + Molokini 08-06 $695
+POST /trip/rebook      {"month":"october"}     -> everything → 10-05→10-12, $11,798, saving $3,558 ✅ within budget
+POST /payment/confirm  {}                      -> PAY-…, $11,798
 ```
 
 ---
 
-## Vocal Bridge reminders
-- **Background AI must be ON** — tool-calling depends on it.
-- **Persona prompt must forbid guessing:** "Never invent flights, times, or
-  prices — always call a tool." Kiki will hallucinate answers instead of calling
-  tools unless the prompt explicitly forbids it.
-- Free tier = 1 agent; edit the same Kiki agent in place.
-- Tool-call latency is audible — use filler speech to cover it. Real Sabre will
-  be slower than the 1.5s mock.
-
-## Phase 2 — remaining 6 tools (after the first voice run)
-Same base URL, all `POST`. Add these once the 3 core tools pass a live voice run:
-
-| Tool | Path | Request body |
-|---|---|---|
-| `adjust_hotel` | `/hotel/adjust` | `{ "expected_arrival": "22:30" }` (optional; defaults to a late check-in) |
-| `move_dining` | `/dining/move` | `{ "new_time": "22:00" }` |
-| `update_transport` | `/transport/update` | `{ "new_pickup_time": "21:45", "flight_number": "AA 1885" }` |
-| `confirm_payment` | `/payment/confirm` | `{ "amount": 45.20, "currency": "USD" }` |
-| `reset_demo` | `/demo/reset` | none `{}` — restores the cancellation for the next rehearsal |
-
-(`get_trip_status` is reused to confirm every AT_RISK item flipped to CONFIRMED — that's the full 9-tool test pass.)
+## Voice/persona reminders
+- **Never invent flights, times, or prices — always call a tool.** Kiki will
+  hallucinate otherwise.
+- **Option C is a trap by design** — its return leaves OGG at ~6 AM. The group's
+  stated preference (`preferences.no_early_return`) is no pre-dawn flights home.
+  Kiki should surface the tradeoff, not silently pick it.
+- **Bridge lines beat silence** — "let me check that now" covers the 1.5s mock delay.
+- The `tradeoff` field on each flight option is written to be **spoken verbatim**.
+- STT mis-hears things; speak trigger phrases clearly.

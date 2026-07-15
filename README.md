@@ -1,27 +1,61 @@
 # Kiki — complete-trip demo backend
 
-FastAPI backend for the "Kiki" voice-agent travel demo. It simulates trip-disruption
-recovery with Sabre-shaped mock data: traveler **Mary** is flying SFO→AUS tonight for
-her sister's wedding, her flight just got **cancelled**, and the agent recovers the
-whole trip — flight, hotel late check-in, rehearsal dinner, airport pickup, payment.
+FastAPI backend for the "Kiki" voice-agent travel demo. It plans a **Maui group
+trip** with Sabre-shaped mock data: 5 travelers (2 couples + 1 child) flying
+**SFO⇄OGG**. The group plans the **first week of August**, discovers it's
+**$3,356 over their $12,000 budget** (peak season), and Kiki moves the whole trip
+to the **first week of October** — one call re-dates and re-prices flights,
+hotel, minivan, and both activities, landing at **$11,798, saving $3,558**.
 
 Everything lives in one in-memory `TRIP` object. Endpoints mutate it, so
 `POST /trip/status` reflects the demo's progress, and `POST /demo/reset` restores the
-initial state for the next rehearsal.
+initial August-planning state for the next rehearsal.
 
 ## Repo structure
 
 ```
 backend/
-  main.py           # FastAPI app, Pydantic models, in-memory TRIP state
+  main.py           # FastAPI app, Pydantic models, in-memory TRIP state, cascade logic
   config.py         # env-var config (MOCK_MODE, MOCK_DELAY_SECONDS, PAYMENT_MOCK)
   sabre_client.py   # stub adapter for real Sabre — TODOs mirror the mock interface
-  mocks/            # JSON fixtures (initial trip, flight search results)
-  tests/            # pytest happy path
+  mocks/
+    trip.json           # invariant trip header (party, budget, constraint)
+    catalog.json        # per-month hotel / transport / activities pricing
+    flight_search.json  # per-month flight options (August + October)
+  tests/            # pytest — happy path + rebooking cascade
+BUILD_STATUS.md     # live build tracker
+TOOL_WIRING.md      # copy-paste Vocal Bridge tool config
 requirements.txt
 ```
 
+### Why the fixtures are split
+`trip.json` holds only what never changes (party, budget, the constraint).
+Everything month-specific lives in `catalog.json` / `flight_search.json`, and
+`_apply_month()` assembles the trip from them. That's what makes August and
+October **genuinely different data** that can't drift apart — the rebooking
+cascade is real, not faked.
+
+## The demo flow
+
+| Step | Endpoint | What happens |
+| ---- | -------- | ------------ |
+| 1 | `POST /demo/reset` | Planning first week of August, nothing booked |
+| 2 | `POST /trip/status` | $15,356 — **$3,356 over** the $12,000 budget |
+| 3 | `POST /flights/search` | 3 options: **A** nonstop/pricey ★, **B** one-stop/cheapest, **C** nonstop but 6 AM return *(meant to be rejected)* |
+| 4 | `POST /flights/book` | Book all 5 onto the chosen `flight_id` |
+| 5 | `POST /hotel/adjust` | 2 ocean-view rooms, 7 nights |
+| 6 | `POST /transport/update` | Minivan + child car seat at OGG |
+| 7 | `POST /activities/book` | Surf lesson + Molokini snorkel |
+| 8 | `POST /trip/rebook` | **The cascade** — `{"month":"october"}` re-flows every vendor |
+| 9 | `POST /payment/confirm` | Charges the trip total (omit `amount`) |
+
+Anything already booked **stays booked** across the cascade — a booked flight
+carries its tier (A/B/C) to the equivalent option in the new month.
+
 ## Configuration (env vars)
+
+See [`.env.example`](.env.example). All three have working defaults, so the demo
+runs with no `.env` at all.
 
 | Variable             | Default | Meaning                                                        |
 | -------------------- | ------- | -------------------------------------------------------------- |
@@ -31,7 +65,7 @@ requirements.txt
 
 With `MOCK_MODE=false` or `PAYMENT_MOCK=false`, endpoints return **501** until
 `sabre_client.py` is implemented (real Sabre / payments are intentionally not
-integrated yet).
+integrated yet — there is no Sabre account behind this demo).
 
 ## Run locally
 
@@ -42,9 +76,8 @@ uvicorn backend.main:app --reload
 ```
 
 - API docs / OpenAPI for your voice platform's tool config: http://127.0.0.1:8000/docs
-  and http://127.0.0.1:8000/openapi.json
 - Each endpoint's one-line docstring is written to be reused verbatim as the
-  voice-agent tool description.
+  voice-agent tool description. See [`TOOL_WIRING.md`](TOOL_WIRING.md).
 - Tip: `MOCK_DELAY_SECONDS=0 uvicorn backend.main:app --reload` while iterating.
 
 ## Run tests
@@ -53,65 +86,46 @@ uvicorn backend.main:app --reload
 pytest
 ```
 
+Covers the full August happy path (plan → book all 4 vendors → pay) and the
+rebooking path (August → October cascades every vendor's dates *and* prices).
+
 ## Deploy to Render (free tier)
 
-The repo ships a [`render.yaml`](render.yaml) Blueprint that pins everything: free
-plan, `pip install -r requirements.txt` build, start command
+Live at **https://kiki-complete-trip.onrender.com** — it **auto-deploys on `git
+push`**. The repo ships a [`render.yaml`](render.yaml) Blueprint that pins
+everything: free plan, `pip install -r requirements.txt` build, start command
 `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`, health check on `/health`,
 and env vars `MOCK_MODE=true`, `PAYMENT_MOCK=true`, `MOCK_DELAY_SECONDS=1.5`.
 
-1. Push this folder to a GitHub repo.
-2. In the Render dashboard: **New → Blueprint**, connect the repo, and Render reads
-   `render.yaml` — click **Apply** and it builds and deploys.
-3. Alternatively (manual): **New → Web Service**, connect the repo, and enter the
-   same build/start commands and env vars from `render.yaml` by hand.
-4. Verify: `curl -s -X POST https://<your-service>.onrender.com/trip/status`
-5. Note: free-tier services sleep after ~15 min idle, and the cold start wipes and
-   restores the in-memory state — hit `POST /demo/reset` before each rehearsal anyway.
-   Set `MOCK_DELAY_SECONDS=0` in the service's Environment tab if you want snappy
-   responses while wiring up the voice platform.
+To stand up a fresh instance: **New → Blueprint**, connect the repo, **Apply**.
+
+Note: free-tier services sleep after ~15 min idle, and the cold start wipes and
+restores the in-memory state — hit `POST /demo/reset` before each rehearsal anyway.
 
 ## Demo walkthrough (curl)
 
 ```bash
-BASE=http://127.0.0.1:8000   # or your Render URL
+BASE=https://kiki-complete-trip.onrender.com   # or http://127.0.0.1:8000
 
-# 0. Fresh start
 curl -s -X POST $BASE/demo/reset | jq
+curl -s -X POST $BASE/trip/status | jq '.totals'
+curl -s -X POST $BASE/flights/search -H 'Content-Type: application/json' -d '{"month":"august"}' | jq '.options[] | {tier, flight_no, stops, price_pp, tradeoff}'
+curl -s -X POST $BASE/flights/book -H 'Content-Type: application/json' -d '{"flight_id":"UA1155"}' | jq '.message'
+curl -s -X POST $BASE/hotel/adjust | jq '.message'
+curl -s -X POST $BASE/transport/update | jq '.message'
+curl -s -X POST $BASE/activities/book | jq '.message'
 
-# 1. What's wrong? (flight CANCELLED, hotel/dinner/pickup AT_RISK)
-curl -s -X POST $BASE/trip/status | jq
+# The cascade — every vendor moves to October dates and prices
+curl -s -X POST $BASE/trip/rebook -H 'Content-Type: application/json' -d '{"month":"october"}' | jq '{message, savings, totals}'
 
-# 2. Find alternatives tonight (AA1885 nonstop is the recommended one)
-curl -s -X POST $BASE/flights/search | jq
-
-# 3. Rebook onto AA1885 — returns price_difference of 45.20
-curl -s -X POST $BASE/flights/rebook \
-  -H 'Content-Type: application/json' -d '{"flight_id": "AA1885"}' | jq
-
-# 4. Hold the hotel room for a late check-in
-curl -s -X POST $BASE/hotel/adjust \
-  -H 'Content-Type: application/json' -d '{"expected_arrival": "22:30"}' | jq
-
-# 5. Move the rehearsal dinner to 10pm
-curl -s -X POST $BASE/dining/move \
-  -H 'Content-Type: application/json' -d '{"new_time": "22:00"}' | jq
-
-# 6. Re-time the airport pickup to the new arrival
-curl -s -X POST $BASE/transport/update \
-  -H 'Content-Type: application/json' -d '{"new_pickup_time": "21:45", "flight_number": "AA 1885"}' | jq
-
-# 7. Pay the fare difference — fake-but-polished confirmation code
-curl -s -X POST $BASE/payment/confirm \
-  -H 'Content-Type: application/json' -d '{"amount": 45.20}' | jq
-
-# 8. All green
-curl -s -X POST $BASE/trip/status | jq
+curl -s -X POST $BASE/payment/confirm -H 'Content-Type: application/json' -d '{}' | jq '.message'
+curl -s -X POST $BASE/trip/status | jq '.totals'
 ```
 
 ## Going live later
 
 `backend/sabre_client.py` is an empty adapter whose functions mirror the mock
 interface exactly (same names, same JSON shapes). Implement its TODOs against real
-Sabre (Get Reservation, Bargain Finder Max, exchanges) and a real payment provider,
-then flip `MOCK_MODE=false` / `PAYMENT_MOCK=false` — no endpoint code changes needed.
+Sabre (Get Reservation, Bargain Finder Max, exchanges, Content Services for
+Lodging) and a real payment provider, then flip `MOCK_MODE=false` /
+`PAYMENT_MOCK=false` — no endpoint code changes needed.

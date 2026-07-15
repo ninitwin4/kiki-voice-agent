@@ -1,9 +1,15 @@
 """Kiki — voice-agent travel demo backend (project: complete-trip).
 
-Simulates trip-disruption recovery for traveler Mary (SFO→AUS tonight for her
-sister's wedding) with Sabre-shaped mock data. All state lives in a single
-in-memory TRIP object; POST /demo/reset restores the initial fixture so the
-demo can be rehearsed repeatedly.
+Plans a 5-person Maui group trip (2 couples + 1 child) SFO⇄OGG with
+Sabre-shaped mock data. The demo plans the first week of August, hits a
+budget constraint (peak season), then rebooks to the first week of October —
+and that date change cascades across flights, hotel, transport, and
+activities so /trip/status re-flows the whole trip.
+
+All state lives in a single in-memory TRIP object. Month-specific pricing
+lives in mocks/catalog.json + mocks/flight_search.json, so August and
+October can't drift apart. POST /demo/reset restores the initial
+August-planning state so the demo can be rehearsed repeatedly.
 """
 import asyncio
 import copy
@@ -21,12 +27,138 @@ from . import config, sabre_client
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
 
-_INITIAL_TRIP: dict = json.loads((MOCKS_DIR / "trip.json").read_text())
-_FLIGHT_SEARCH: dict = json.loads((MOCKS_DIR / "flight_search.json").read_text())
+_TRIP_HEADER: dict = json.loads((MOCKS_DIR / "trip.json").read_text())
+_CATALOG: dict = json.loads((MOCKS_DIR / "catalog.json").read_text())
+_FLIGHTS: dict = json.loads((MOCKS_DIR / "flight_search.json").read_text())
 
-# The single shared demo state. Endpoints mutate it in place so
-# /trip/status reflects the demo's progress.
-TRIP: dict = copy.deepcopy(_INITIAL_TRIP)
+MONTHS = tuple(_CATALOG.keys())  # ("august", "october")
+
+
+# --------------------------------------------------------------------------
+# Trip assembly — every vendor is priced from the catalog for the trip's
+# current month, so a month change re-prices everything consistently.
+# --------------------------------------------------------------------------
+
+def _options(month: str) -> list[dict]:
+    return _FLIGHTS[month]["options"]
+
+
+def _recommended(month: str) -> dict:
+    return next(o for o in _options(month) if o["recommended"])
+
+
+def _flight_entry(option: dict, status: str, locator: str | None = None) -> dict:
+    """Shape a search option into the trip's `flights` block."""
+    entry = {k: option[k] for k in (
+        "flight_id", "tier", "carrier", "flight_no", "depart_time", "arrive_time",
+        "stops", "price_pp", "total_price", "return_flight_no",
+        "return_depart_time", "return_arrive_time", "tradeoff",
+    )}
+    entry["status"] = status
+    entry["record_locator"] = locator
+    return entry
+
+
+def _apply_month(trip: dict, month: str) -> None:
+    """Point the trip at `month`, re-pricing every vendor from the catalog.
+
+    Booked/NOT_BOOKED statuses and confirmation numbers survive the move, so a
+    rebook keeps whatever the group already committed to — just on new dates
+    at the new month's prices. A booked flight carries its tier (A/B/C) across
+    to the equivalent option in the new month.
+    """
+    entry = _CATALOG[month]
+    trip["month"] = month
+    trip["dates"] = {**entry["dates"], "label": entry["label"], "season": entry["season"]}
+
+    prev_hotel = trip.get("hotel") or {}
+    hotel = copy.deepcopy(entry["hotel"])
+    hotel["check_in"] = entry["dates"]["start"]
+    hotel["check_out"] = entry["dates"]["end"]
+    hotel["status"] = prev_hotel.get("status", "NOT_BOOKED")
+    hotel["confirmation_number"] = prev_hotel.get("confirmation_number")
+    trip["hotel"] = hotel
+
+    prev_transport = trip.get("transport") or {}
+    transport = copy.deepcopy(entry["transport"])
+    transport["pickup_date"] = entry["dates"]["start"]
+    transport["dropoff_date"] = entry["dates"]["end"]
+    transport["status"] = prev_transport.get("status", "NOT_BOOKED")
+    transport["confirmation_number"] = prev_transport.get("confirmation_number")
+    trip["transport"] = transport
+
+    prev_activities = trip.get("activities") or {}
+    prev_by_id = {a["activity_id"]: a for a in prev_activities.get("items", [])}
+    items = []
+    for template in entry["activities"]:
+        item = copy.deepcopy(template)
+        prev = prev_by_id.get(item["activity_id"], {})
+        item["status"] = prev.get("status", "NOT_BOOKED")
+        item["confirmation_number"] = prev.get("confirmation_number")
+        items.append(item)
+    trip["activities"] = {
+        "status": prev_activities.get("status", "NOT_BOOKED"),
+        "items": items,
+    }
+
+    prev_flights = trip.get("flights") or {}
+    if prev_flights.get("status") == "BOOKED":
+        same_tier = next(o for o in _options(month) if o["tier"] == prev_flights["tier"])
+        trip["flights"] = _flight_entry(same_tier, "BOOKED", prev_flights.get("record_locator"))
+    else:
+        trip["flights"] = {"status": "NOT_BOOKED", "tier": None, "flight_id": None}
+
+
+def _build_initial_trip() -> dict:
+    trip = copy.deepcopy(_TRIP_HEADER)
+    _apply_month(trip, trip["month"])
+    return trip
+
+
+def _flights_amount(trip: dict) -> float:
+    """Booked fare if a flight is booked, otherwise the recommended option's
+    quote — so /trip/status shows a realistic total before anything is booked."""
+    if trip["flights"].get("status") == "BOOKED":
+        return trip["flights"]["total_price"]
+    return _recommended(trip["month"])["total_price"]
+
+
+def _totals(trip: dict) -> dict:
+    flights = _flights_amount(trip)
+    hotel = trip["hotel"]["total"]
+    transport = trip["transport"]["total"]
+    activities = round(sum(a["total"] for a in trip["activities"]["items"]), 2)
+    trip_total = round(flights + hotel + transport + activities, 2)
+    budget = trip["budget"]["amount"]
+    return {
+        "currency": trip["budget"]["currency"],
+        "flights": flights,
+        "hotel": hotel,
+        "transport": transport,
+        "activities": activities,
+        "trip_total": trip_total,
+        "budget": budget,
+        "over_budget_by": round(max(trip_total - budget, 0.0), 2),
+        "within_budget": trip_total <= budget,
+        "flights_quoted": trip["flights"].get("status") != "BOOKED",
+    }
+
+
+def _validate_month(month: str) -> str:
+    key = (month or "").strip().lower()
+    if key not in _CATALOG:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown month '{month}'. Valid options: {list(MONTHS)}",
+        )
+    return key
+
+
+def _confirmation(prefix: str) -> str:
+    return f"{prefix}-{uuid.uuid4().hex[:6].upper()}"
+
+
+TRIP: dict = _build_initial_trip()
 
 
 # --------------------------------------------------------------------------
@@ -36,56 +168,118 @@ TRIP: dict = copy.deepcopy(_INITIAL_TRIP)
 
 class Traveler(BaseModel):
     name: str
-    email: str
-    loyalty: str
+    type: str
+    age: int | None = None
 
 
-class TripFlightSegment(BaseModel):
-    flight_number: str
-    origin: str
-    destination: str
-    departure_time: str
-    arrival_time: str
+class Party(BaseModel):
+    adults: int
+    children: int
+    total: int
+    rooms: int
+    note: str
+    travelers: list[Traveler]
+
+
+class Budget(BaseModel):
+    amount: float
+    currency: str
+    note: str
+
+
+class Preferences(BaseModel):
+    no_early_return: bool
+    note: str
+
+
+class TripDates(BaseModel):
+    start: str
+    end: str
+    nights: int
+    label: str
+    season: str
+
+
+class TripFlights(BaseModel):
     status: str
-    cancellation_reason: str | None = None
-
-
-class TripFlight(BaseModel):
-    record_locator: str
-    cabin: str
-    fare_paid: float
-    rebooked_fare: float | None = None
-    status: str
-    segments: list[TripFlightSegment]
+    tier: str | None = None
+    flight_id: str | None = None
+    carrier: str | None = None
+    flight_no: str | None = None
+    depart_time: str | None = None
+    arrive_time: str | None = None
+    stops: int | None = None
+    price_pp: float | None = None
+    total_price: float | None = None
+    return_flight_no: str | None = None
+    return_depart_time: str | None = None
+    return_arrive_time: str | None = None
+    tradeoff: str | None = None
+    record_locator: str | None = None
 
 
 class TripHotel(BaseModel):
-    name: str
-    confirmation_number: str
-    check_in: str
-    nights: int
-    late_checkin: bool
-    guaranteed_until: str
     status: str
-    note: str | None = None
+    name: str
+    room_type: str
+    rooms: int
+    check_in: str
+    check_out: str
+    nightly_rate: float
+    nights: int
+    total: float
+    note: str
+    confirmation_number: str | None = None
 
 
 class TripTransport(BaseModel):
+    status: str
     provider: str
-    confirmation_number: str
+    vehicle: str
     pickup_location: str
-    pickup_time: str
-    status: str
-    note: str | None = None
+    pickup_date: str
+    dropoff_date: str
+    car_seat: bool
+    car_seat_fee_per_day: float
+    daily_rate: float
+    days: int
+    total: float
+    note: str
+    confirmation_number: str | None = None
 
 
-class TripDining(BaseModel):
-    venue: str
-    event: str
-    party_size: int
+class ActivityItem(BaseModel):
+    activity_id: str
+    name: str
+    provider: str
+    kid_friendly: bool
+    date: str
     time: str
+    duration: str
+    price_pp: float
+    participants: int
+    total: float
+    note: str
     status: str
-    note: str | None = None
+    confirmation_number: str | None = None
+
+
+class TripActivities(BaseModel):
+    status: str
+    items: list[ActivityItem]
+
+
+class Totals(BaseModel):
+    currency: str
+    flights: float
+    hotel: float
+    transport: float
+    activities: float
+    trip_total: float
+    budget: float
+    over_budget_by: float
+    within_budget: bool
+    flights_quoted: bool
 
 
 class PaymentRecord(BaseModel):
@@ -99,100 +293,123 @@ class PaymentRecord(BaseModel):
 
 class TripStatusOut(BaseModel):
     trip_id: str
-    traveler: Traveler
-    purpose: str
-    flight: TripFlight
-    hotel: TripHotel
-    transport: TripTransport
-    dining: TripDining
-    payments: list[PaymentRecord]
-
-
-class Fare(BaseModel):
-    amount: float
-    currency: str
-
-
-class SearchSegment(BaseModel):
-    carrier: str
-    flight_number: str
+    trip_name: str
+    status: str
+    month: str
     origin: str
     destination: str
-    departure_time: str
-    arrival_time: str
-    duration: str
-    aircraft: str
-
-
-class Itinerary(BaseModel):
-    flight_id: str
-    recommended: bool
-    reason: str
-    cabin: str
-    seats_remaining: int
-    totalFare: Fare
-    segments: list[SearchSegment]
+    dates: TripDates
+    party: Party
+    budget: Budget
+    preferences: Preferences
+    constraint: str
+    flights: TripFlights
+    hotel: TripHotel
+    transport: TripTransport
+    activities: TripActivities
+    totals: Totals
+    payments: list[PaymentRecord]
 
 
 class SearchRequestEcho(BaseModel):
     origin: str
     destination: str
-    date: str
+    month: str
+    dates: str
+    travelers: int
+    season: str
     source: str
+
+
+class FlightOption(BaseModel):
+    flight_id: str
+    tier: str
+    carrier: str
+    flight_no: str
+    depart_time: str
+    arrive_time: str
+    stops: int
+    price_pp: float
+    total_price: float
+    recommended: bool
+    return_flight_no: str
+    return_depart_time: str
+    return_arrive_time: str
+    tradeoff: str
+
+
+class FlightSearchIn(BaseModel):
+    month: str | None = Field(
+        None, description="Which month to price, 'august' or 'october'. Defaults to the trip's current month."
+    )
 
 
 class FlightSearchOut(BaseModel):
     request: SearchRequestEcho
-    itineraries: list[Itinerary]
+    options: list[FlightOption]
 
 
-class RebookIn(BaseModel):
-    flight_id: str = Field(..., description="flight_id from /flights/search, e.g. 'AA1885'")
+class FlightBookIn(BaseModel):
+    flight_id: str = Field(..., description="flight_id from /flights/search, e.g. 'UA1155'")
 
 
-class RebookOut(BaseModel):
+class FlightBookOut(BaseModel):
     confirmed: bool
     message: str
     record_locator: str
-    price_difference: float
-    currency: str
-    flight: TripFlight
+    flights: TripFlights
+    totals: Totals
 
 
-class HotelAdjustIn(BaseModel):
-    late_checkin: bool = True
-    expected_arrival: str | None = Field(None, description="Expected arrival at the hotel, e.g. '22:30'")
-
-
-class HotelAdjustOut(BaseModel):
+class HotelBookOut(BaseModel):
     confirmed: bool
     message: str
     hotel: TripHotel
+    totals: Totals
 
 
-class DiningMoveIn(BaseModel):
-    new_time: str = Field(..., description="New reservation time, e.g. '22:00'")
-
-
-class DiningMoveOut(BaseModel):
-    confirmed: bool
-    message: str
-    dining: TripDining
-
-
-class TransportUpdateIn(BaseModel):
-    new_pickup_time: str = Field(..., description="New pickup time at AUS arrivals, e.g. '21:45'")
-    flight_number: str | None = Field(None, description="Flight the pickup should track, e.g. 'AA 1885'")
-
-
-class TransportUpdateOut(BaseModel):
+class TransportBookOut(BaseModel):
     confirmed: bool
     message: str
     transport: TripTransport
+    totals: Totals
+
+
+class ActivitiesBookIn(BaseModel):
+    activity: str | None = Field(
+        None, description="Book one experience only: 'surf' or 'snorkel'. Omit to book both."
+    )
+
+
+class ActivitiesBookOut(BaseModel):
+    confirmed: bool
+    message: str
+    activities: TripActivities
+    totals: Totals
+
+
+class TripRebookIn(BaseModel):
+    month: str = Field(..., description="Move the whole trip to this month: 'august' or 'october'.")
+
+
+class TripRebookOut(BaseModel):
+    confirmed: bool
+    message: str
+    previous_month: str
+    month: str
+    dates: TripDates
+    savings: float
+    flights: TripFlights
+    hotel: TripHotel
+    transport: TripTransport
+    activities: TripActivities
+    totals: Totals
 
 
 class PaymentIn(BaseModel):
-    amount: float = Field(..., description="Amount to charge, e.g. the rebooking price difference")
+    amount: float | None = Field(
+        None, description="Amount to charge. Omit to charge the trip's current total."
+    )
     currency: str = "USD"
 
 
@@ -222,8 +439,8 @@ async def mock_latency() -> None:
 
 app = FastAPI(
     title="Kiki — complete-trip demo API",
-    description="Trip-disruption recovery demo backend with Sabre-shaped mock data.",
-    version="0.1.0",
+    description="Maui group-trip planning demo backend with Sabre-shaped mock data.",
+    version="0.2.0",
     dependencies=[Depends(mock_latency)],
 )
 
@@ -240,6 +457,11 @@ async def not_implemented_handler(request: Request, exc: NotImplementedError) ->
     return JSONResponse(status_code=501, content={"detail": str(exc)})
 
 
+@app.get("/health")
+async def health() -> dict:
+    return {"status": "ok", "mock_mode": config.MOCK_MODE}
+
+
 # --------------------------------------------------------------------------
 # Endpoints — each docstring is one line so it can be reused verbatim as the
 # voice-agent tool description.
@@ -247,167 +469,219 @@ async def not_implemented_handler(request: Request, exc: NotImplementedError) ->
 
 @app.post("/trip/status", response_model=TripStatusOut)
 async def trip_status() -> dict:
-    """Get Mary's full trip itinerary with the current status of the flight, hotel, airport pickup, and rehearsal dinner."""
+    """Get the group's full Maui trip plan: dates, party, flights, hotel, transport, activities, running total, and whether it fits the budget."""
     if not config.MOCK_MODE:
         return sabre_client.get_trip_status()
-    return TRIP
+    return {**TRIP, "totals": _totals(TRIP)}
 
 
 @app.post("/flights/search", response_model=FlightSearchOut)
-async def flights_search() -> dict:
-    """Search for alternative SFO to AUS flights tonight and return priced itineraries with a recommended option."""
+async def flights_search(body: FlightSearchIn | None = None) -> dict:
+    """Search SFO to Maui (OGG) flights for 5 travelers and return three priced options, each with a tradeoff to read aloud."""
+    month = _validate_month(body.month) if body and body.month else TRIP["month"]
     if not config.MOCK_MODE:
-        return sabre_client.search_flights(origin="SFO", destination="AUS")
-    return _FLIGHT_SEARCH
+        return sabre_client.search_flights(origin="SFO", destination="OGG", month=month)
+    return _FLIGHTS[month]
 
 
-@app.post("/flights/rebook", response_model=RebookOut)
-async def flights_rebook(body: RebookIn) -> dict:
-    """Rebook Mary onto the chosen alternative flight by flight_id and return the confirmation and price difference."""
+@app.post("/flights/book", response_model=FlightBookOut)
+async def flights_book(body: FlightBookIn) -> dict:
+    """Book the group onto a chosen flight by flight_id; requires explicit verbal confirmation first."""
     if not config.MOCK_MODE:
-        return sabre_client.rebook_flight(flight_id=body.flight_id)
+        return sabre_client.book_flight(flight_id=body.flight_id)
 
-    itinerary = next(
-        (i for i in _FLIGHT_SEARCH["itineraries"] if i["flight_id"] == body.flight_id),
-        None,
-    )
-    if itinerary is None:
-        valid = [i["flight_id"] for i in _FLIGHT_SEARCH["itineraries"]]
-        raise HTTPException(status_code=404, detail=f"Unknown flight_id '{body.flight_id}'. Valid options: {valid}")
+    option = next((o for o in _options(TRIP["month"]) if o["flight_id"] == body.flight_id), None)
+    if option is None:
+        valid = [o["flight_id"] for o in _options(TRIP["month"])]
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown flight_id '{body.flight_id}' for {TRIP['month']}. Valid options: {valid}",
+        )
 
-    price_difference = round(itinerary["totalFare"]["amount"] - TRIP["flight"]["fare_paid"], 2)
-    TRIP["flight"]["segments"] = [
-        {
-            "flight_number": seg["flight_number"],
-            "origin": seg["origin"],
-            "destination": seg["destination"],
-            "departure_time": seg["departure_time"],
-            "arrival_time": seg["arrival_time"],
-            "status": "CONFIRMED",
-            "cancellation_reason": None,
-        }
-        for seg in itinerary["segments"]
-    ]
-    TRIP["flight"]["status"] = "CONFIRMED"
-    TRIP["flight"]["cabin"] = itinerary["cabin"]
-    TRIP["flight"]["rebooked_fare"] = itinerary["totalFare"]["amount"]
-
-    first, last = itinerary["segments"][0], itinerary["segments"][-1]
+    locator = _confirmation("PNR")
+    TRIP["flights"] = _flight_entry(option, "BOOKED", locator)
     return {
         "confirmed": True,
         "message": (
-            f"Rebooked on {first['flight_number']}, departing SFO at {first['departure_time']} "
-            f"and arriving AUS at {last['arrival_time']}."
+            f"Booked all 5 travelers on {option['carrier']} {option['flight_no']}, "
+            f"SFO {option['depart_time']} → OGG {option['arrive_time']}, returning "
+            f"{option['return_flight_no']} at {option['return_depart_time']}. "
+            f"Total {option['total_price']:.2f} USD."
         ),
-        "record_locator": TRIP["flight"]["record_locator"],
-        "price_difference": price_difference,
-        "currency": itinerary["totalFare"]["currency"],
-        "flight": TRIP["flight"],
+        "record_locator": locator,
+        "flights": TRIP["flights"],
+        "totals": _totals(TRIP),
     }
 
 
-@app.post("/hotel/adjust", response_model=HotelAdjustOut)
-async def hotel_adjust(body: HotelAdjustIn | None = None) -> dict:
-    """Flag a late check-in on Mary's hotel reservation so the room is held past the release time."""
+@app.post("/hotel/adjust", response_model=HotelBookOut)
+async def hotel_adjust() -> dict:
+    """Book the two resort rooms on Maui for the trip's current dates and return the confirmation and total."""
     if not config.MOCK_MODE:
-        return sabre_client.adjust_hotel(
-            late_checkin=body.late_checkin if body else True,
-            expected_arrival=body.expected_arrival if body else None,
-        )
+        return sabre_client.adjust_hotel(month=TRIP["month"])
 
-    late_checkin = body.late_checkin if body else True
-    expected = (body.expected_arrival if body else None) or "late tonight"
-    TRIP["hotel"]["late_checkin"] = late_checkin
-    TRIP["hotel"]["status"] = "CONFIRMED" if late_checkin else "AT_RISK"
-    TRIP["hotel"]["note"] = (
-        f"Late arrival on file — room held all night (expected arrival {expected})"
-        if late_checkin
-        else TRIP["hotel"]["note"]
-    )
+    TRIP["hotel"]["status"] = "BOOKED"
+    TRIP["hotel"]["confirmation_number"] = TRIP["hotel"].get("confirmation_number") or _confirmation("HTL")
+    hotel = TRIP["hotel"]
     return {
         "confirmed": True,
-        "message": f"{TRIP['hotel']['name']} will hold the room for a late check-in (expected arrival {expected}).",
+        "message": (
+            f"Booked {hotel['rooms']} {hotel['room_type']} rooms at {hotel['name']}, "
+            f"{hotel['check_in']} to {hotel['check_out']} ({hotel['nights']} nights) — "
+            f"{hotel['nightly_rate']:.2f} per room per night, {hotel['total']:.2f} USD total."
+        ),
+        "hotel": hotel,
+        "totals": _totals(TRIP),
+    }
+
+
+@app.post("/transport/update", response_model=TransportBookOut)
+async def transport_update() -> dict:
+    """Book the minivan with a child car seat at Maui airport (OGG) for the trip's current dates and return the confirmation."""
+    if not config.MOCK_MODE:
+        return sabre_client.update_transport(month=TRIP["month"])
+
+    TRIP["transport"]["status"] = "BOOKED"
+    TRIP["transport"]["confirmation_number"] = (
+        TRIP["transport"].get("confirmation_number") or _confirmation("CAR")
+    )
+    transport = TRIP["transport"]
+    return {
+        "confirmed": True,
+        "message": (
+            f"Booked a {transport['vehicle']} with a child car seat from {transport['provider']}, "
+            f"picking up at {transport['pickup_location']} on {transport['pickup_date']} and "
+            f"returning {transport['dropoff_date']} — {transport['total']:.2f} USD total."
+        ),
+        "transport": transport,
+        "totals": _totals(TRIP),
+    }
+
+
+@app.post("/activities/book", response_model=ActivitiesBookOut)
+async def activities_book(body: ActivitiesBookIn | None = None) -> dict:
+    """Book the group's Maui experiences — a kid-friendly beginner surfing lesson and the Molokini snorkeling tour — for the trip's current dates."""
+    requested = (body.activity if body else None) or None
+    if not config.MOCK_MODE:
+        return sabre_client.book_activities(activity=requested, month=TRIP["month"])
+
+    items = TRIP["activities"]["items"]
+    if requested:
+        key = requested.strip().lower()
+        targets = [a for a in items if a["activity_id"] == key]
+        if not targets:
+            valid = [a["activity_id"] for a in items]
+            raise HTTPException(
+                status_code=404,
+                detail=f"Unknown activity '{requested}'. Valid options: {valid}",
+            )
+    else:
+        targets = items
+
+    for item in targets:
+        item["status"] = "BOOKED"
+        item["confirmation_number"] = item.get("confirmation_number") or _confirmation("ACT")
+
+    TRIP["activities"]["status"] = (
+        "BOOKED" if all(a["status"] == "BOOKED" for a in items) else "PARTIAL"
+    )
+    booked_total = round(sum(a["total"] for a in targets), 2)
+    names = " and ".join(f"{a['name']} on {a['date']} at {a['time']}" for a in targets)
+    return {
+        "confirmed": True,
+        "message": f"Booked {names} for all 5 — {booked_total:.2f} USD total.",
+        "activities": TRIP["activities"],
+        "totals": _totals(TRIP),
+    }
+
+
+@app.post("/trip/rebook", response_model=TripRebookOut)
+async def trip_rebook(body: TripRebookIn) -> dict:
+    """Move the entire trip to a different month — this re-dates and re-prices the flights, hotel, minivan, and activities together."""
+    month = _validate_month(body.month)
+    if not config.MOCK_MODE:
+        return sabre_client.rebook_trip(month=month)
+
+    previous_month = TRIP["month"]
+    if month == previous_month:
+        raise HTTPException(
+            status_code=400,
+            detail=f"The trip is already planned for {previous_month}.",
+        )
+
+    before = _totals(TRIP)["trip_total"]
+    _apply_month(TRIP, month)
+    after_totals = _totals(TRIP)
+    savings = round(before - after_totals["trip_total"], 2)
+
+    dates = TRIP["dates"]
+    return {
+        "confirmed": True,
+        "message": (
+            f"Moved the whole trip from {previous_month} to {dates['label']} "
+            f"({dates['start']} to {dates['end']}). Flights, hotel, minivan, and both "
+            f"activities are re-dated and re-priced — new total {after_totals['trip_total']:.2f} USD, "
+            f"saving {savings:.2f}."
+        ),
+        "previous_month": previous_month,
+        "month": month,
+        "dates": dates,
+        "savings": savings,
+        "flights": TRIP["flights"],
         "hotel": TRIP["hotel"],
-    }
-
-
-@app.post("/dining/move", response_model=DiningMoveOut)
-async def dining_move(body: DiningMoveIn) -> dict:
-    """Move the rehearsal-dinner reservation to a new time and return the updated reservation."""
-    if not config.MOCK_MODE:
-        return sabre_client.move_dining(new_time=body.new_time)
-
-    TRIP["dining"]["time"] = body.new_time
-    TRIP["dining"]["status"] = "CONFIRMED"
-    TRIP["dining"]["note"] = f"Moved to {body.new_time} for Mary's late arrival"
-    return {
-        "confirmed": True,
-        "message": (
-            f"Rehearsal dinner at {TRIP['dining']['venue']} moved to {body.new_time} "
-            f"for a party of {TRIP['dining']['party_size']}."
-        ),
-        "dining": TRIP["dining"],
-    }
-
-
-@app.post("/transport/update", response_model=TransportUpdateOut)
-async def transport_update(body: TransportUpdateIn) -> dict:
-    """Re-time Mary's airport pickup to match the new flight arrival and return the confirmation."""
-    if not config.MOCK_MODE:
-        return sabre_client.update_transport(
-            new_pickup_time=body.new_pickup_time, flight_number=body.flight_number
-        )
-
-    TRIP["transport"]["pickup_time"] = body.new_pickup_time
-    TRIP["transport"]["status"] = "CONFIRMED"
-    tracked = body.flight_number or TRIP["flight"]["segments"][-1]["flight_number"]
-    TRIP["transport"]["note"] = f"Pickup re-timed to {body.new_pickup_time}, tracking {tracked}"
-    return {
-        "confirmed": True,
-        "message": (
-            f"{TRIP['transport']['provider']} pickup moved to {body.new_pickup_time} "
-            f"at {TRIP['transport']['pickup_location']}."
-        ),
         "transport": TRIP["transport"],
+        "activities": TRIP["activities"],
+        "totals": after_totals,
     }
 
 
 @app.post("/payment/confirm", response_model=PaymentOut)
-async def payment_confirm(body: PaymentIn) -> dict:
-    """Charge the traveler's card on file for the given amount and return a payment confirmation code."""
+async def payment_confirm(body: PaymentIn | None = None) -> dict:
+    """Charge the card on file for the trip total and return a payment confirmation code."""
     if not config.PAYMENT_MOCK:
         raise NotImplementedError(
             "Real payment processing is not integrated yet — set PAYMENT_MOCK=true."
         )
 
+    totals = _totals(TRIP)
+    amount = body.amount if body and body.amount is not None else totals["trip_total"]
+    currency = body.currency if body else "USD"
+
     record = {
         "confirmation_code": f"PAY-{uuid.uuid4().hex[:8].upper()}",
-        "amount": round(body.amount, 2),
-        "currency": body.currency,
+        "amount": round(amount, 2),
+        "currency": currency,
         "method": "Visa ending 4242 (card on file)",
         "status": "PAID",
         "processed_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
     TRIP["payments"].append(record)
+    TRIP["status"] = "BOOKED"
     return {
         "confirmed": True,
         "confirmation_code": record["confirmation_code"],
         "amount": record["amount"],
         "currency": record["currency"],
         "method": record["method"],
-        "message": f"Payment of {record['amount']:.2f} {record['currency']} approved. Confirmation {record['confirmation_code']}.",
+        "message": (
+            f"Payment of {record['amount']:.2f} {record['currency']} approved. "
+            f"Confirmation {record['confirmation_code']}."
+        ),
     }
 
 
 @app.post("/demo/reset", response_model=ResetOut)
 async def demo_reset() -> dict:
-    """Reset the demo to its initial state, with Mary's original flight cancelled and everything else at risk."""
+    """Reset the demo to its initial state, with the group planning the first week of August and nothing booked yet."""
     TRIP.clear()
-    TRIP.update(copy.deepcopy(_INITIAL_TRIP))
-    return {"reset": True, "message": "Trip restored to initial state: AA 2418 is CANCELLED again."}
-
-
-@app.get("/health")
-async def health() -> dict:
-    """Liveness check (also useful as the Render health-check path)."""
-    return {"status": "ok", "mock_mode": config.MOCK_MODE}
+    TRIP.update(_build_initial_trip())
+    totals = _totals(TRIP)
+    return {
+        "reset": True,
+        "message": (
+            f"Trip restored to planning {TRIP['dates']['label']} "
+            f"({TRIP['dates']['start']} to {TRIP['dates']['end']}), nothing booked. "
+            f"August quote {totals['trip_total']:.2f} USD — "
+            f"{totals['over_budget_by']:.2f} over the {totals['budget']:.2f} budget."
+        ),
+    }

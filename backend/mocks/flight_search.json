@@ -1,80 +1,124 @@
 {
-  "request": {
-    "origin": "SFO",
-    "destination": "AUS",
-    "date": "tonight",
-    "source": "BargainFinderMax (mock)"
+  "august": {
+    "request": {
+      "origin": "SFO",
+      "destination": "OGG",
+      "month": "august",
+      "dates": "2026-08-03 → 2026-08-10",
+      "travelers": 5,
+      "season": "peak",
+      "source": "BargainFinderMax (mock)"
+    },
+    "options": [
+      {
+        "flight_id": "UA1155",
+        "tier": "A",
+        "carrier": "United",
+        "flight_no": "UA 1155",
+        "depart_time": "08:15",
+        "arrive_time": "10:50",
+        "stops": 0,
+        "price_pp": 782.0,
+        "total_price": 3910.0,
+        "recommended": true,
+        "return_flight_no": "UA 1156",
+        "return_depart_time": "14:25",
+        "return_arrive_time": "22:05",
+        "tradeoff": "Nonstop both ways with a civilized 2:25 PM flight home — the easiest option with a five-year-old, but the priciest at $782 per person."
+      },
+      {
+        "flight_id": "HA1024",
+        "tier": "B",
+        "carrier": "Hawaiian",
+        "flight_no": "HA 24",
+        "depart_time": "07:00",
+        "arrive_time": "12:35",
+        "stops": 1,
+        "price_pp": 648.0,
+        "total_price": 3240.0,
+        "recommended": false,
+        "return_flight_no": "HA 25",
+        "return_depart_time": "13:10",
+        "return_arrive_time": "22:40",
+        "tradeoff": "Cheapest of the three and saves the group $670, but a Honolulu connection adds about two hours each way with a tired kid."
+      },
+      {
+        "flight_id": "AS0862",
+        "tier": "C",
+        "carrier": "Alaska",
+        "flight_no": "AS 862",
+        "depart_time": "09:40",
+        "arrive_time": "12:15",
+        "stops": 0,
+        "price_pp": 731.0,
+        "total_price": 3655.0,
+        "recommended": false,
+        "return_flight_no": "AS 863",
+        "return_depart_time": "06:05",
+        "return_arrive_time": "13:45",
+        "tradeoff": "Nonstop and $255 cheaper than United, but the return leaves OGG at 6:05 AM — a 4 AM wake-up for all five, including the child."
+      }
+    ]
   },
-  "itineraries": [
-    {
-      "flight_id": "AA1885",
-      "recommended": true,
-      "reason": "Nonstop and lands at 21:45 — in time for a late rehearsal-dinner seating",
-      "cabin": "Main Cabin",
-      "seats_remaining": 5,
-      "totalFare": { "amount": 209.40, "currency": "USD" },
-      "segments": [
-        {
-          "carrier": "AA",
-          "flight_number": "AA 1885",
-          "origin": "SFO",
-          "destination": "AUS",
-          "departure_time": "16:20",
-          "arrival_time": "21:45",
-          "duration": "3h 25m",
-          "aircraft": "737 MAX 8"
-        }
-      ]
+  "october": {
+    "request": {
+      "origin": "SFO",
+      "destination": "OGG",
+      "month": "october",
+      "dates": "2026-10-05 → 2026-10-12",
+      "travelers": 5,
+      "season": "shoulder",
+      "source": "BargainFinderMax (mock)"
     },
-    {
-      "flight_id": "AA2694",
-      "recommended": false,
-      "reason": "Cheapest option, but a tight DFW connection lands close to midnight",
-      "cabin": "Main Cabin",
-      "seats_remaining": 2,
-      "totalFare": { "amount": 176.10, "currency": "USD" },
-      "segments": [
-        {
-          "carrier": "AA",
-          "flight_number": "AA 2694",
-          "origin": "SFO",
-          "destination": "DFW",
-          "departure_time": "15:10",
-          "arrival_time": "20:35",
-          "duration": "3h 25m",
-          "aircraft": "A321"
-        },
-        {
-          "carrier": "AA",
-          "flight_number": "AA 411",
-          "origin": "DFW",
-          "destination": "AUS",
-          "departure_time": "21:25",
-          "arrival_time": "22:25",
-          "duration": "1h 0m",
-          "aircraft": "E175"
-        }
-      ]
-    },
-    {
-      "flight_id": "AA989",
-      "recommended": false,
-      "reason": "Latest departure and First cabin only — lands after 1 AM",
-      "cabin": "First",
-      "seats_remaining": 3,
-      "totalFare": { "amount": 434.00, "currency": "USD" },
-      "segments": [
-        {
-          "carrier": "AA",
-          "flight_number": "AA 989",
-          "origin": "SFO",
-          "destination": "AUS",
-          "departure_time": "19:55",
-          "arrival_time": "01:10",
-          "duration": "3h 15m",
-          "aircraft": "737-800"
-        }
-      ]
-    }
-  ]
+    "options": [
+      {
+        "flight_id": "UA1187",
+        "tier": "A",
+        "carrier": "United",
+        "flight_no": "UA 1187",
+        "depart_time": "08:40",
+        "arrive_time": "11:15",
+        "stops": 0,
+        "price_pp": 596.0,
+        "total_price": 2980.0,
+        "recommended": true,
+        "return_flight_no": "UA 1188",
+        "return_depart_time": "14:50",
+        "return_arrive_time": "22:30",
+        "tradeoff": "Nonstop both ways at shoulder-season pricing — $930 less than the same nonstop in August, and still an afternoon flight home."
+      },
+      {
+        "flight_id": "HA1032",
+        "tier": "B",
+        "carrier": "Hawaiian",
+        "flight_no": "HA 32",
+        "depart_time": "06:50",
+        "arrive_time": "12:20",
+        "stops": 1,
+        "price_pp": 487.0,
+        "total_price": 2435.0,
+        "recommended": false,
+        "return_flight_no": "HA 33",
+        "return_depart_time": "13:35",
+        "return_arrive_time": "23:05",
+        "tradeoff": "Cheapest overall at $487 per person, but the Honolulu connection is still a two-hour penalty each way."
+      },
+      {
+        "flight_id": "AS0874",
+        "tier": "C",
+        "carrier": "Alaska",
+        "flight_no": "AS 874",
+        "depart_time": "10:05",
+        "arrive_time": "12:40",
+        "stops": 0,
+        "price_pp": 561.0,
+        "total_price": 2805.0,
+        "recommended": false,
+        "return_flight_no": "AS 875",
+        "return_depart_time": "06:20",
+        "return_arrive_time": "14:00",
+        "tradeoff": "Nonstop and cheaper than United, but the return is another 6:20 AM departure — the same pre-dawn problem the group already rejected."
+      }
+    ]
+  }
 }

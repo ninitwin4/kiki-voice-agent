@@ -8,35 +8,40 @@ every call raises NotImplementedError, which main.py maps to HTTP 501.
 
 
 def get_trip_status() -> dict:
-    """TODO: fetch the PNR via Sabre Get Reservation and map it to the trip.json shape."""
+    """TODO: fetch the PNR via Sabre Get Reservation and map it to the trip shape."""
     raise NotImplementedError("Sabre Get Reservation is not integrated yet — set MOCK_MODE=true.")
 
 
-def search_flights(origin: str, destination: str) -> dict:
-    """TODO: call Sabre Bargain Finder Max and map itineraries to the flight_search.json shape."""
+def search_flights(origin: str, destination: str, month: str) -> dict:
+    """TODO: call Sabre Bargain Finder Max for SFO⇄OGG on the month's dates, map to the flight_search shape."""
     raise NotImplementedError("Sabre Bargain Finder Max is not integrated yet — set MOCK_MODE=true.")
 
 
-def rebook_flight(flight_id: str) -> dict:
-    """TODO: exchange the ticket via Sabre (cancel segment + book selected itinerary), return RebookOut shape."""
-    raise NotImplementedError("Sabre rebooking is not integrated yet — set MOCK_MODE=true.")
+def book_flight(flight_id: str) -> dict:
+    """TODO: book the selected itinerary for 5 travelers via Sabre, return the FlightBookOut shape."""
+    raise NotImplementedError("Sabre booking is not integrated yet — set MOCK_MODE=true.")
 
 
-def adjust_hotel(late_checkin: bool, expected_arrival: str | None) -> dict:
-    """TODO: update the hotel booking via Sabre Content Services for Lodging, return HotelAdjustOut shape."""
-    raise NotImplementedError("Sabre hotel modification is not integrated yet — set MOCK_MODE=true.")
+def adjust_hotel(month: str) -> dict:
+    """TODO: book 2 rooms via Sabre Content Services for Lodging, return the HotelBookOut shape."""
+    raise NotImplementedError("Sabre hotel booking is not integrated yet — set MOCK_MODE=true.")
 
 
-def move_dining(new_time: str) -> dict:
-    """TODO: integrate a restaurant-reservation provider (dining is not a Sabre product), return DiningMoveOut shape."""
-    raise NotImplementedError("Dining-reservation integration is not implemented yet — set MOCK_MODE=true.")
-
-
-def update_transport(new_pickup_time: str, flight_number: str | None) -> dict:
-    """TODO: re-time the ground transport booking with the provider, return TransportUpdateOut shape."""
+def update_transport(month: str) -> dict:
+    """TODO: book the minivan + child car seat with the ground-transport provider, return the TransportBookOut shape."""
     raise NotImplementedError("Ground-transport integration is not implemented yet — set MOCK_MODE=true.")
 
 
+def book_activities(activity: str | None, month: str) -> dict:
+    """TODO: book the surf lesson / Molokini tour with the activities provider (not a Sabre product), return the ActivitiesBookOut shape."""
+    raise NotImplementedError("Activities integration is not implemented yet — set MOCK_MODE=true.")
+
+
+def rebook_trip(month: str) -> dict:
+    """TODO: exchange the ticket and move every vendor booking to the new month's dates, return the TripRebookOut shape."""
+    raise NotImplementedError("Sabre exchanges are not integrated yet — set MOCK_MODE=true.")
+
+
 def confirm_payment(amount: float, currency: str) -> dict:
-    """TODO: charge via the real payment provider (e.g. PayPal), return PaymentOut shape."""
+    """TODO: charge via the real payment provider (e.g. PayPal), return the PaymentOut shape."""
     raise NotImplementedError("Real payment processing is not integrated yet — set PAYMENT_MOCK=true.")
