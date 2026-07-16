@@ -1,0 +1,190 @@
+[
+  {
+    "id": "266b255c-765b-4891-9df1-97007d073875",
+    "url": "https://kiki-complete-trip.onrender.com/trip/status",
+    "auth": {
+      "type": "none"
+    },
+    "name": "get_trip_status",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [],
+    "description": "Get the group's full Maui trip plan: dates, party, flights, hotel, transport, activities, running total, and whether it fits the $12,000 budget. Call this first, before anything else.",
+    "max_retries": 2
+  },
+  {
+    "id": "e9212ab7-8e4f-42fe-88ae-0d29a247f44a",
+    "url": "https://kiki-complete-trip.onrender.com/flights/search",
+    "auth": {
+      "type": "none"
+    },
+    "name": "search_flights",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "month",
+        "type": "string",
+        "location": "body",
+        "required": false,
+        "description": "Which month to price: august or october. Omit to use the trip's current month."
+      }
+    ],
+    "description": "Search SFO to Maui (OGG) flights for 5 travelers. Returns three priced options, each with a tradeoff to read aloud. Optional month parameter: august or october.",
+    "max_retries": 2
+  },
+  {
+    "id": "8bcbb0b7-1838-4975-8725-2cc1f694c56a",
+    "url": "https://kiki-complete-trip.onrender.com/flights/book",
+    "auth": {
+      "type": "none"
+    },
+    "name": "book_flight",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "flight_id",
+        "type": "string",
+        "location": "body",
+        "required": true,
+        "description": "The flight_id from search_flights, for example AA289."
+      }
+    ],
+    "description": "Book all 5 travelers onto a chosen flight. Needs the flight_id from search_flights. Only call after the traveler says yes out loud.",
+    "max_retries": 2
+  },
+  {
+    "id": "f98975fc-af1e-43c3-b578-338e56f36daf",
+    "url": "https://kiki-complete-trip.onrender.com/hotel/adjust",
+    "auth": {
+      "type": "none"
+    },
+    "name": "book_hotel",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [],
+    "description": "Book the two resort rooms on Maui for the trip's current dates. Only call after the traveler says yes out loud.",
+    "max_retries": 2
+  },
+  {
+    "id": "b75d3044-d44d-401a-9a87-82a058120aef",
+    "url": "https://kiki-complete-trip.onrender.com/transport/update",
+    "auth": {
+      "type": "none"
+    },
+    "name": "book_transport",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [],
+    "description": "Book the minivan with a child car seat at Maui airport (OGG) for the trip's current dates. Only call after the traveler says yes out loud.",
+    "max_retries": 2
+  },
+  {
+    "id": "9a0fb624-f681-46fd-8956-8355f54e401f",
+    "url": "https://kiki-complete-trip.onrender.com/activities/book",
+    "auth": {
+      "type": "none"
+    },
+    "name": "book_activities",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "activity",
+        "type": "string",
+        "location": "body",
+        "required": false,
+        "description": "Book one experience only: surf or snorkel. Omit to book both."
+      }
+    ],
+    "description": "Book the Maui experiences: a kid-friendly beginner surf lesson and the Molokini snorkeling tour. Omit the activity parameter to book both at once. Only call after the traveler says yes.",
+    "max_retries": 2
+  },
+  {
+    "id": "ce0ad796-8f7a-4e19-95a7-709a31423738",
+    "url": "https://kiki-complete-trip.onrender.com/trip/rebook",
+    "auth": {
+      "type": "none"
+    },
+    "name": "change_trip_dates",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "month",
+        "type": "string",
+        "location": "body",
+        "required": true,
+        "description": "The month to move the whole trip to: august or october."
+      }
+    ],
+    "description": "Move the whole trip to a different month: august or october. This re-dates and re-prices the flights, hotel, minivan and activities together in one step. Explain what it will do, then only call after a clear yes.",
+    "max_retries": 2
+  },
+  {
+    "id": "c1eeaa46-dd6c-4958-896d-cfc84a294886",
+    "url": "https://kiki-complete-trip.onrender.com/payment/confirm",
+    "auth": {
+      "type": "none"
+    },
+    "name": "confirm_payment",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "amount",
+        "type": "number",
+        "location": "body",
+        "required": false,
+        "description": "Amount to charge. Omit to charge the trip's current total."
+      }
+    ],
+    "description": "Charge the card on file for the trip total and return a confirmation code. Omit the amount to charge the current total. Only call after the traveler confirms the amount out loud.",
+    "max_retries": 2
+  },
+  {
+    "id": "a08e204a-77cc-499a-8b1b-d8b2d00b94db",
+    "url": "https://kiki-complete-trip.onrender.com/trip/configure",
+    "auth": {
+      "type": "none"
+    },
+    "name": "configure_trip",
+    "method": "POST",
+    "enabled": true,
+    "timeout": 30,
+    "parameters": [
+      {
+        "name": "nights",
+        "type": "number",
+        "location": "body",
+        "required": false,
+        "description": "How many nights on Maui (1-14). Omit to keep the current length."
+      },
+      {
+        "name": "travelers",
+        "type": "number",
+        "location": "body",
+        "required": false,
+        "description": "Total travelers including kids (1-9). Omit to keep the current party."
+      },
+      {
+        "name": "rooms",
+        "type": "number",
+        "location": "body",
+        "required": false,
+        "description": "How many hotel rooms (1-6). Omit to keep the current number."
+      }
+    ],
+    "description": "Change the trip's size or length and re-price the whole trip. Use this whenever they want anything other than the standard 5 travelers / 7 nights \u2014 e.g. fewer nights, more or fewer people, or a different number of rooms. Returns the new dates and total. Never estimate these numbers yourself; call this.",
+    "max_retries": 2
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "tts": {
+    "model": "eleven_flash_v2_5",
+    "voice_id": "EXAVITQu4vr4xnSDxMaL",
+    "voice_style": "none",
+    "custom_api_key": "",
+    "custom_voice_id": "",
+    "voice_id_source": "library"
+  },
+  "audio": {
+    "ambient_volume": 0.8,
+    "ambient_enabled": "false",
+    "thinking_volume": 0.2,
+    "thinking_enabled": "true"
+  },
+  "session": {
+    "continuous_mode": "false",
+    "max_history_messages": 100,
+    "continuous_mode_delay": 2.0,
+    "max_call_duration_minutes": 30
+  },
+  "realtime": {
+    "model": "gpt-realtime-2",
+    "voice": "marin",
+    "vad_threshold": 0.5,
+    "use_external_tts": "false",
+    "semantic_eagerness": "auto",
+    "silence_duration_ms": 100,
+    "turn_detection_type": "server_vad"
+  },
+  "background": {
+    "model": "auto"
+  },
+  "post_processing": {
+    "model": "auto"
+  }
+}

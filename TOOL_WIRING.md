@@ -29,6 +29,11 @@ goes in the **body**, never `query`.
 | 6 | `book_activities` | `https://kiki-complete-trip.onrender.com/activities/book` | `activity` *(optional)* |
 | 7 | `change_trip_dates` | `https://kiki-complete-trip.onrender.com/trip/rebook` | `month` **required** |
 | 8 | `confirm_payment` | `https://kiki-complete-trip.onrender.com/payment/confirm` | `amount` *(optional)* |
+| 9 | `configure_trip` | `https://kiki-complete-trip.onrender.com/trip/configure` | `nights`, `travelers`, `rooms` *(all optional, number)* |
+
+`configure_trip` re-prices the whole trip for a different size/length (e.g. "5 nights not 7",
+"party of 3"). Hotel + transport scale with nights; flights + activities scale with travelers.
+It exists so Kiki never has to price a variation in its head. Already wired on the agent via CLI.
 
 ⚠️ **Adding tools in the VB editor:** click **+ Add API tool** → **Save immediately** →
 *then* fill the fields → Save again. Saving right after adding forces VB to assign the
