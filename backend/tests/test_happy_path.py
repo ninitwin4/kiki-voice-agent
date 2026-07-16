@@ -230,6 +230,71 @@ def test_reset_restores_initial_august_planning_state(client):
     assert trip["totals"]["within_budget"] is False
 
 
+def test_configure_fewer_nights_reprices_everything(client):
+    # The exact off-script moment from the live call: "5 nights, not 7."
+    before = client.post("/trip/status").json()
+    assert before["dates"]["nights"] == 7
+    assert before["hotel"]["total"] == pytest.approx(685.0 * 2 * 7)
+
+    cfg = client.post("/trip/configure", json={"nights": 5})
+    assert cfg.status_code == 200
+    body = cfg.json()
+    assert body["confirmed"] is True
+    assert body["dates"]["nights"] == 5
+    assert body["dates"]["start"] == "2026-08-03"
+    assert body["dates"]["end"] == "2026-08-08"  # start + 5 nights
+    # Hotel + transport scale with nights; flights + activities do not.
+    assert body["hotel"]["total"] == pytest.approx(685.0 * 2 * 5)
+    assert body["transport"]["total"] == pytest.approx((89.0 + 9.0) * 5)
+    assert body["hotel"]["check_out"] == "2026-08-08"
+    assert body["transport"]["dropoff_date"] == "2026-08-08"
+    # /trip/status reflects the new length.
+    assert client.post("/trip/status").json()["dates"]["nights"] == 5
+
+
+def test_configure_party_size_reprices_per_person_costs(client):
+    cfg = client.post("/trip/configure", json={"travelers": 3, "rooms": 2}).json()
+    assert cfg["party"]["total"] == 3
+    # Flights + activities are per-person; hotel + transport are not.
+    search = client.post("/flights/search").json()
+    rec = next(o for o in search["options"] if o["recommended"])
+    assert rec["total_price"] == pytest.approx(rec["price_pp"] * 3)
+    assert search["request"]["travelers"] == 3
+    surf = next(a for a in cfg["activities"]["items"] if a["activity_id"] == "surf")
+    assert surf["participants"] == 3
+    assert surf["total"] == pytest.approx(surf["price_pp"] * 3)
+    assert cfg["hotel"]["total"] == pytest.approx(685.0 * 2 * 7)  # rooms/nights unchanged
+
+
+def test_configure_survives_the_month_cascade(client):
+    # Set 5 nights, party 6, then move to October — the size must carry over.
+    client.post("/trip/configure", json={"nights": 5, "travelers": 6})
+    client.post("/flights/book", json={"flight_id": "AA289"})
+    rebook = client.post("/trip/rebook", json={"month": "october"}).json()
+    assert rebook["dates"]["nights"] == 5
+    assert rebook["dates"]["start"] == "2026-10-05"
+    assert rebook["dates"]["end"] == "2026-10-10"  # Oct 5 + 5 nights
+    assert rebook["hotel"]["total"] == pytest.approx(512.0 * 2 * 5)
+    assert rebook["flights"]["total_price"] == pytest.approx(596.0 * 6)  # AA293 pp * 6
+    assert rebook["flights"]["status"] == "BOOKED"
+
+
+def test_configure_bounds_are_enforced(client):
+    assert client.post("/trip/configure", json={"nights": 0}).status_code == 422
+    assert client.post("/trip/configure", json={"nights": 99}).status_code == 422
+    assert client.post("/trip/configure", json={"travelers": 20}).status_code == 422
+    assert client.post("/trip/configure", json={}).status_code == 400  # nothing to change
+
+
+def test_configure_is_reset_by_demo_reset(client):
+    client.post("/trip/configure", json={"nights": 3, "travelers": 2})
+    client.post("/demo/reset")
+    trip = client.post("/trip/status").json()
+    assert trip["dates"]["nights"] == 7
+    assert trip["party"]["total"] == 5
+    assert trip["party"]["rooms"] == 2
+
+
 def test_book_unknown_flight_id_is_404(client):
     resp = client.post("/flights/book", json={"flight_id": "UA999"})
     assert resp.status_code == 404

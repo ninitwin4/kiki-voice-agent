@@ -15,7 +15,7 @@ import asyncio
 import copy
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Request
@@ -39,6 +39,14 @@ MONTHS = tuple(_CATALOG.keys())  # ("august", "october")
 # current month, so a month change re-prices everything consistently.
 # --------------------------------------------------------------------------
 
+VEHICLE_SEATS = 7  # the minivan; a bigger party needs a note about a second van
+
+# Bounds for /trip/configure, so the demo can flex without going off a cliff.
+NIGHTS_MIN, NIGHTS_MAX = 1, 14
+TRAVELERS_MIN, TRAVELERS_MAX = 1, 9
+ROOMS_MIN, ROOMS_MAX = 1, 6
+
+
 def _options(month: str) -> list[dict]:
     return _FLIGHTS[month]["options"]
 
@@ -47,42 +55,90 @@ def _recommended(month: str) -> dict:
     return next(o for o in _options(month) if o["recommended"])
 
 
-def _flight_entry(option: dict, status: str, locator: str | None = None) -> dict:
-    """Shape a search option into the trip's `flights` block."""
+def _nights(trip: dict) -> int:
+    return trip["nights"]
+
+
+def _travelers(trip: dict) -> int:
+    return trip["party"]["total"]
+
+
+def _rooms(trip: dict) -> int:
+    return trip["party"]["rooms"]
+
+
+def _end_date(start: str, nights: int) -> str:
+    y, m, d = (int(x) for x in start.split("-"))
+    return (date(y, m, d) + timedelta(days=nights)).isoformat()
+
+
+def _priced_option(option: dict, travelers: int) -> dict:
+    """A flight search option with total_price recomputed for the party size."""
+    priced = dict(option)
+    priced["total_price"] = round(option["price_pp"] * travelers, 2)
+    return priced
+
+
+def _flight_entry(option: dict, status: str, travelers: int, locator: str | None = None) -> dict:
+    """Shape a search option into the trip's `flights` block, priced for the party."""
     entry = {k: option[k] for k in (
         "flight_id", "tier", "carrier", "flight_no", "depart_time", "arrive_time",
-        "stops", "price_pp", "total_price", "return_flight_no",
+        "stops", "price_pp", "return_flight_no",
         "return_depart_time", "return_arrive_time", "tradeoff",
     )}
+    entry["total_price"] = round(option["price_pp"] * travelers, 2)
     entry["status"] = status
     entry["record_locator"] = locator
     return entry
 
 
 def _apply_month(trip: dict, month: str) -> None:
-    """Point the trip at `month`, re-pricing every vendor from the catalog.
+    """Re-assemble the trip for `month`, pricing every vendor from the catalog's
+    base rates times the trip's current size (nights, travelers, rooms).
 
-    Booked/NOT_BOOKED statuses and confirmation numbers survive the move, so a
-    rebook keeps whatever the group already committed to — just on new dates
-    at the new month's prices. A booked flight carries its tier (A/B/C) across
-    to the equivalent option in the new month.
+    This is the single re-pricing path: a month change (/trip/rebook) and a size
+    change (/trip/configure) both run through here, so nothing can drift. Booked
+    statuses and confirmation numbers survive, and a booked flight carries its
+    tier (A/B/C) across to the equivalent option in the new month.
     """
     entry = _CATALOG[month]
+    nights = trip.get("nights") or entry["dates"]["nights"]
+    travelers = _travelers(trip)
+    rooms = _rooms(trip)
+    start = entry["dates"]["start"]
+    end = _end_date(start, nights)
+
     trip["month"] = month
-    trip["dates"] = {**entry["dates"], "label": entry["label"], "season": entry["season"]}
+    trip["nights"] = nights
+    trip["dates"] = {
+        "start": start, "end": end, "nights": nights,
+        "label": entry["label"], "season": entry["season"],
+    }
 
     prev_hotel = trip.get("hotel") or {}
     hotel = copy.deepcopy(entry["hotel"])
-    hotel["check_in"] = entry["dates"]["start"]
-    hotel["check_out"] = entry["dates"]["end"]
+    hotel["rooms"] = rooms
+    hotel["nights"] = nights
+    hotel["check_in"] = start
+    hotel["check_out"] = end
+    hotel["total"] = round(hotel["nightly_rate"] * rooms * nights, 2)
     hotel["status"] = prev_hotel.get("status", "NOT_BOOKED")
     hotel["confirmation_number"] = prev_hotel.get("confirmation_number")
     trip["hotel"] = hotel
 
     prev_transport = trip.get("transport") or {}
     transport = copy.deepcopy(entry["transport"])
-    transport["pickup_date"] = entry["dates"]["start"]
-    transport["dropoff_date"] = entry["dates"]["end"]
+    transport["days"] = nights
+    transport["pickup_date"] = start
+    transport["dropoff_date"] = end
+    transport["total"] = round(
+        (transport["daily_rate"] + transport["car_seat_fee_per_day"]) * nights, 2
+    )
+    if travelers > VEHICLE_SEATS:
+        transport["note"] = (
+            f"{transport['note']} Party of {travelers} exceeds one minivan "
+            f"({VEHICLE_SEATS} seats) — a second vehicle may be needed."
+        )
     transport["status"] = prev_transport.get("status", "NOT_BOOKED")
     transport["confirmation_number"] = prev_transport.get("confirmation_number")
     trip["transport"] = transport
@@ -92,6 +148,8 @@ def _apply_month(trip: dict, month: str) -> None:
     items = []
     for template in entry["activities"]:
         item = copy.deepcopy(template)
+        item["participants"] = travelers
+        item["total"] = round(item["price_pp"] * travelers, 2)
         prev = prev_by_id.get(item["activity_id"], {})
         item["status"] = prev.get("status", "NOT_BOOKED")
         item["confirmation_number"] = prev.get("confirmation_number")
@@ -104,23 +162,27 @@ def _apply_month(trip: dict, month: str) -> None:
     prev_flights = trip.get("flights") or {}
     if prev_flights.get("status") == "BOOKED":
         same_tier = next(o for o in _options(month) if o["tier"] == prev_flights["tier"])
-        trip["flights"] = _flight_entry(same_tier, "BOOKED", prev_flights.get("record_locator"))
+        trip["flights"] = _flight_entry(
+            same_tier, "BOOKED", travelers, prev_flights.get("record_locator")
+        )
     else:
         trip["flights"] = {"status": "NOT_BOOKED", "tier": None, "flight_id": None}
 
 
 def _build_initial_trip() -> dict:
     trip = copy.deepcopy(_TRIP_HEADER)
+    trip.setdefault("nights", _CATALOG[trip["month"]]["dates"]["nights"])
     _apply_month(trip, trip["month"])
     return trip
 
 
 def _flights_amount(trip: dict) -> float:
     """Booked fare if a flight is booked, otherwise the recommended option's
-    quote — so /trip/status shows a realistic total before anything is booked."""
+    quote for the current party — so /trip/status shows a realistic total
+    before anything is booked."""
     if trip["flights"].get("status") == "BOOKED":
         return trip["flights"]["total_price"]
-    return _recommended(trip["month"])["total_price"]
+    return round(_recommended(trip["month"])["price_pp"] * _travelers(trip), 2)
 
 
 def _totals(trip: dict) -> dict:
@@ -406,6 +468,33 @@ class TripRebookOut(BaseModel):
     totals: Totals
 
 
+class TripConfigureIn(BaseModel):
+    nights: int | None = Field(
+        None, ge=NIGHTS_MIN, le=NIGHTS_MAX,
+        description=f"How many nights on Maui ({NIGHTS_MIN}-{NIGHTS_MAX}). Omit to keep the current length.",
+    )
+    travelers: int | None = Field(
+        None, ge=TRAVELERS_MIN, le=TRAVELERS_MAX,
+        description=f"Total travelers including kids ({TRAVELERS_MIN}-{TRAVELERS_MAX}). Omit to keep the current party.",
+    )
+    rooms: int | None = Field(
+        None, ge=ROOMS_MIN, le=ROOMS_MAX,
+        description=f"How many hotel rooms ({ROOMS_MIN}-{ROOMS_MAX}). Omit to keep the current number.",
+    )
+
+
+class TripConfigureOut(BaseModel):
+    confirmed: bool
+    message: str
+    dates: TripDates
+    party: Party
+    hotel: TripHotel
+    transport: TripTransport
+    activities: TripActivities
+    flights: TripFlights
+    totals: Totals
+
+
 class PaymentIn(BaseModel):
     amount: float | None = Field(
         None, description="Amount to charge. Omit to charge the trip's current total."
@@ -477,11 +566,16 @@ async def trip_status() -> dict:
 
 @app.post("/flights/search", response_model=FlightSearchOut)
 async def flights_search(body: FlightSearchIn | None = None) -> dict:
-    """Search SFO to Maui (OGG) flights for 5 travelers and return three priced options, each with a tradeoff to read aloud."""
+    """Search SFO to Maui (OGG) flights for the group and return three priced options, each with a tradeoff to read aloud."""
     month = _validate_month(body.month) if body and body.month else TRIP["month"]
     if not config.MOCK_MODE:
         return sabre_client.search_flights(origin="SFO", destination="OGG", month=month)
-    return _FLIGHTS[month]
+    travelers = _travelers(TRIP)
+    data = _FLIGHTS[month]
+    return {
+        "request": {**data["request"], "travelers": travelers},
+        "options": [_priced_option(o, travelers) for o in data["options"]],
+    }
 
 
 @app.post("/flights/book", response_model=FlightBookOut)
@@ -498,15 +592,16 @@ async def flights_book(body: FlightBookIn) -> dict:
             detail=f"Unknown flight_id '{body.flight_id}' for {TRIP['month']}. Valid options: {valid}",
         )
 
+    travelers = _travelers(TRIP)
     locator = _confirmation("PNR")
-    TRIP["flights"] = _flight_entry(option, "BOOKED", locator)
+    TRIP["flights"] = _flight_entry(option, "BOOKED", travelers, locator)
     return {
         "confirmed": True,
         "message": (
-            f"Booked all 5 travelers on {option['carrier']} {option['flight_no']}, "
+            f"Booked all {travelers} travelers on {option['carrier']} {option['flight_no']}, "
             f"SFO {option['depart_time']} → OGG {option['arrive_time']}, returning "
             f"{option['return_flight_no']} at {option['return_depart_time']}. "
-            f"Total {option['total_price']:.2f} USD."
+            f"Total {TRIP['flights']['total_price']:.2f} USD."
         ),
         "record_locator": locator,
         "flights": TRIP["flights"],
@@ -589,9 +684,61 @@ async def activities_book(body: ActivitiesBookIn | None = None) -> dict:
     names = " and ".join(f"{a['name']} on {a['date']} at {a['time']}" for a in targets)
     return {
         "confirmed": True,
-        "message": f"Booked {names} for all 5 — {booked_total:.2f} USD total.",
+        "message": f"Booked {names} for all {_travelers(TRIP)} — {booked_total:.2f} USD total.",
         "activities": TRIP["activities"],
         "totals": _totals(TRIP),
+    }
+
+
+@app.post("/trip/configure", response_model=TripConfigureOut)
+async def trip_configure(body: TripConfigureIn) -> dict:
+    """Change the trip's size or length — number of nights, travelers, or hotel rooms — and re-price the whole trip; use this when they want anything other than the standard 5-person, 7-night plan."""
+    if not config.MOCK_MODE:
+        return sabre_client.configure_trip(
+            nights=body.nights, travelers=body.travelers, rooms=body.rooms
+        )
+
+    changes = []
+    if body.nights is not None:
+        TRIP["nights"] = body.nights
+        changes.append(f"{body.nights} nights")
+    if body.travelers is not None:
+        party = TRIP["party"]
+        party["total"] = body.travelers
+        party["adults"] = max(body.travelers - party.get("children", 0), 0)
+        changes.append(f"{body.travelers} travelers")
+    if body.rooms is not None:
+        TRIP["party"]["rooms"] = body.rooms
+        changes.append(f"{body.rooms} rooms")
+
+    if not changes:
+        raise HTTPException(
+            status_code=400,
+            detail="Nothing to change — provide at least one of nights, travelers, or rooms.",
+        )
+
+    _apply_month(TRIP, TRIP["month"])  # single re-pricing path; keeps month + bookings
+    totals = _totals(TRIP)
+    dates = TRIP["dates"]
+    return {
+        "confirmed": True,
+        "message": (
+            f"Updated to {', '.join(changes)}: {_travelers(TRIP)} travelers, "
+            f"{_rooms(TRIP)} rooms, {dates['nights']} nights ({dates['start']} to {dates['end']}). "
+            f"New total {totals['trip_total']:.2f} USD — "
+            + (
+                f"{totals['over_budget_by']:.2f} over the {totals['budget']:.2f} budget."
+                if not totals["within_budget"]
+                else f"within the {totals['budget']:.2f} budget."
+            )
+        ),
+        "dates": dates,
+        "party": TRIP["party"],
+        "hotel": TRIP["hotel"],
+        "transport": TRIP["transport"],
+        "activities": TRIP["activities"],
+        "flights": TRIP["flights"],
+        "totals": totals,
     }
 
 

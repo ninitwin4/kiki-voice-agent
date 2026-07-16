@@ -37,6 +37,11 @@ def book_activities(activity: str | None, month: str) -> dict:
     raise NotImplementedError("Activities integration is not implemented yet — set MOCK_MODE=true.")
 
 
+def configure_trip(nights: int | None, travelers: int | None, rooms: int | None) -> dict:
+    """TODO: re-quote every vendor for the new party size / length via Sabre, return the TripConfigureOut shape."""
+    raise NotImplementedError("Sabre re-quoting is not integrated yet — set MOCK_MODE=true.")
+
+
 def rebook_trip(month: str) -> dict:
     """TODO: exchange the ticket and move every vendor booking to the new month's dates, return the TripRebookOut shape."""
     raise NotImplementedError("Sabre exchanges are not integrated yet — set MOCK_MODE=true.")
