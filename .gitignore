@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .DS_Store
+
+# Secrets — real Sabre / PayPal credentials. NEVER commit.
+.env
+.env.local

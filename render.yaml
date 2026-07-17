@@ -1,4 +1,5 @@
 services:
+  # ---- MOCK version — the reliable demo / rehearsal service (everything mock) ----
   - type: web
     name: kiki-complete-trip
     runtime: python
@@ -15,3 +16,41 @@ services:
         value: "true"
       - key: MOCK_DELAY_SECONDS
         value: "1.5"
+
+  # ---- REAL version — hackathon-qualifying: live Sabre flight search + PayPal ----
+  # Same repo, same code; only the flags + secrets differ. Enter the Sabre /
+  # PayPal credentials in the Render dashboard (sync: false = not committed).
+  - type: web
+    name: kiki-real
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.5
+      - key: MOCK_MODE
+        value: "true"          # rest of the trip stays mock — only the two flags below go live
+      - key: PAYMENT_MOCK
+        value: "true"
+      - key: MOCK_DELAY_SECONDS
+        value: "0"
+      - key: SABRE_FLIGHTS_LIVE
+        value: "true"
+      - key: PAYPAL_LIVE
+        value: "true"
+      - key: SABRE_CLIENT_ID
+        sync: false
+      - key: SABRE_CLIENT_SECRET
+        sync: false
+      - key: SABRE_BASE_URL
+        value: "https://api-crt.cert.havail.sabre.com"
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_SECRET
+        sync: false
+      - key: PAYPAL_BASE_URL
+        value: "https://api-m.sandbox.paypal.com"
+      - key: PAYPAL_CURRENCY
+        value: "USD"

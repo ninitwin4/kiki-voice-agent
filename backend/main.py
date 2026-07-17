@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from . import config, sabre_client
+from . import config, paypal_client, sabre_client
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
 
@@ -511,6 +511,38 @@ class PaymentOut(BaseModel):
     message: str
 
 
+class PayPalConfigOut(BaseModel):
+    client_id: str
+    currency: str
+
+
+class PayPalCreateIn(BaseModel):
+    amount: float | None = Field(
+        None, description="Amount to charge. Omit to use the trip's current total."
+    )
+
+
+class PayPalCreateOut(BaseModel):
+    order_id: str
+    status: str | None = None
+    approve_url: str | None = None
+    amount: float
+    currency: str
+
+
+class PayPalCaptureIn(BaseModel):
+    order_id: str = Field(..., description="order_id returned by create-order, after buyer approval.")
+
+
+class PayPalCaptureOut(BaseModel):
+    confirmed: bool
+    status: str | None = None
+    capture_id: str | None = None
+    amount: float
+    currency: str
+    message: str
+
+
 class ResetOut(BaseModel):
     reset: bool
     message: str
@@ -548,7 +580,8 @@ async def not_implemented_handler(request: Request, exc: NotImplementedError) ->
 
 @app.get("/health")
 async def health() -> dict:
-    return {"status": "ok", "mock_mode": config.MOCK_MODE}
+    """Self-describing health check — says whether this URL is the mock or real service."""
+    return {"status": "ok", "mock_mode": config.MOCK_MODE, **config.mode()}
 
 
 # --------------------------------------------------------------------------
@@ -568,9 +601,15 @@ async def trip_status() -> dict:
 async def flights_search(body: FlightSearchIn | None = None) -> dict:
     """Search SFO to Maui (OGG) flights for the group and return three priced options, each with a tradeoff to read aloud."""
     month = _validate_month(body.month) if body and body.month else TRIP["month"]
-    if not config.MOCK_MODE:
-        return sabre_client.search_flights(origin="SFO", destination="OGG", month=month)
     travelers = _travelers(TRIP)
+    if config.SABRE_FLIGHTS_LIVE:
+        dates = _CATALOG[month]["dates"]
+        depart = dates["start"]
+        nights = TRIP.get("nights") or dates["nights"]
+        return sabre_client.search_flights(
+            origin="SFO", destination="OGG",
+            depart_date=depart, return_date=_end_date(depart, nights), travelers=travelers,
+        )
     data = _FLIGHTS[month]
     return {
         "request": {**data["request"], "travelers": travelers},
@@ -813,6 +852,67 @@ async def payment_confirm(body: PaymentIn | None = None) -> dict:
         "message": (
             f"Payment of {record['amount']:.2f} {record['currency']} approved. "
             f"Confirmation {record['confirmation_code']}."
+        ),
+    }
+
+
+# --------------------------------------------------------------------------
+# Real PayPal (sandbox) — only enabled on the "real" service (PAYPAL_LIVE=true).
+# The itinerary UI drives these via the PayPal JS SDK button:
+#   config -> create-order -> (buyer approves in the button) -> capture-order.
+# --------------------------------------------------------------------------
+
+def _require_paypal() -> None:
+    if not config.PAYPAL_LIVE:
+        raise HTTPException(
+            status_code=404,
+            detail="PayPal is not enabled on this service (mock version). Use /payment/confirm.",
+        )
+
+
+@app.get("/payment/paypal/config", response_model=PayPalConfigOut)
+async def paypal_config() -> dict:
+    """Public PayPal client id + currency for the UI's PayPal JS SDK (safe to expose)."""
+    _require_paypal()
+    return {"client_id": config.PAYPAL_CLIENT_ID, "currency": config.PAYPAL_CURRENCY}
+
+
+@app.post("/payment/paypal/create-order", response_model=PayPalCreateOut)
+async def paypal_create_order(body: PayPalCreateIn | None = None) -> dict:
+    """Create a PayPal sandbox order for the trip total (or a given amount) and return its order_id."""
+    _require_paypal()
+    amount = round(
+        body.amount if body and body.amount is not None else _totals(TRIP)["trip_total"], 2
+    )
+    result = paypal_client.create_order(amount=amount, currency=config.PAYPAL_CURRENCY)
+    return {**result, "amount": amount, "currency": config.PAYPAL_CURRENCY}
+
+
+@app.post("/payment/paypal/capture-order", response_model=PayPalCaptureOut)
+async def paypal_capture_order(body: PayPalCaptureIn) -> dict:
+    """Capture an approved PayPal sandbox order and record the payment on the trip."""
+    _require_paypal()
+    cap = paypal_client.capture_order(body.order_id)
+    paid = cap.get("status") == "COMPLETED"
+    if paid:
+        TRIP["payments"].append({
+            "confirmation_code": cap.get("capture_id") or "PAYPAL",
+            "amount": cap["amount"],
+            "currency": cap["currency"],
+            "method": f"PayPal sandbox ({cap.get('payer_email') or 'buyer'})",
+            "status": "PAID",
+            "processed_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        })
+        TRIP["status"] = "BOOKED"
+    return {
+        "confirmed": paid,
+        "status": cap.get("status"),
+        "capture_id": cap.get("capture_id"),
+        "amount": cap["amount"],
+        "currency": cap["currency"],
+        "message": (
+            f"PayPal payment {cap.get('status')} — {cap['amount']:.2f} {cap['currency']}"
+            + (f", capture {cap['capture_id']}." if cap.get("capture_id") else ".")
         ),
     }
 
