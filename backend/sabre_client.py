@@ -28,12 +28,23 @@ _token: tuple[str, float] | None = None
 
 
 def _get_token() -> str:
-    """Sabre OAuth2 client_credentials, with Sabre's double-base64 Basic-auth quirk."""
+    """Return a Sabre bearer token.
+
+    Prefers a pasted SABRE_ACCESS_TOKEN (simplest — just one value to provide);
+    otherwise does the OAuth2 client_credentials exchange with client id/secret,
+    using Sabre's double-base64 Basic-auth quirk, and caches the result.
+    """
+    if config.SABRE_ACCESS_TOKEN:
+        return config.SABRE_ACCESS_TOKEN
+
     global _token
     if _token and _token[1] - 60 > time.monotonic():
         return _token[0]
     if not (config.SABRE_CLIENT_ID and config.SABRE_CLIENT_SECRET):
-        raise RuntimeError("Sabre credentials missing — set SABRE_CLIENT_ID / SABRE_CLIENT_SECRET.")
+        raise RuntimeError(
+            "Sabre credentials missing — set SABRE_ACCESS_TOKEN, or "
+            "SABRE_CLIENT_ID / SABRE_CLIENT_SECRET."
+        )
 
     enc_id = base64.b64encode(config.SABRE_CLIENT_ID.encode()).decode()
     enc_secret = base64.b64encode(config.SABRE_CLIENT_SECRET.encode()).decode()
@@ -54,121 +65,121 @@ def _get_token() -> str:
     return _token[0]
 
 
-def _hhmm(iso_dt: str) -> str:
-    """'2026-08-03T08:15:00' -> '08:15'."""
-    try:
-        return iso_dt.split("T", 1)[1][:5]
-    except (IndexError, AttributeError):
-        return ""
-
-
-def _segments(od_option: dict) -> list[dict]:
-    seg = od_option.get("FlightSegment", [])
-    return seg if isinstance(seg, list) else [seg]
-
-
-def _leg(seg: dict) -> dict:
-    carrier = (seg.get("MarketingAirline") or {}).get("Code", "")
-    return {
-        "carrier_code": carrier,
-        "carrier": _CARRIERS.get(carrier, carrier),
-        "flight_no": f"{carrier} {seg.get('FlightNumber', '')}".strip(),
-        "depart_time": _hhmm(seg.get("DepartureDateTime", "")),
-        "arrive_time": _hhmm(seg.get("ArrivalDateTime", "")),
-    }
-
-
-def _map_itinerary(priced: dict, tier: str, travelers: int, recommended: bool) -> dict:
-    """Map one Sabre PricedItinerary into our FlightOption shape (best-effort)."""
-    ods = (
-        priced.get("AirItinerary", {})
-        .get("OriginDestinationOptions", {})
-        .get("OriginDestinationOption", [])
-    )
-    ods = ods if isinstance(ods, list) else [ods]
-    out_segs = _segments(ods[0]) if ods else []
-    ret_segs = _segments(ods[1]) if len(ods) > 1 else []
-
-    first_out = _leg(out_segs[0]) if out_segs else {}
-    last_out = _leg(out_segs[-1]) if out_segs else {}
-    first_ret = _leg(ret_segs[0]) if ret_segs else {}
-    last_ret = _leg(ret_segs[-1]) if ret_segs else {}
-    stops = max(len(out_segs) - 1, 0)
-
-    fare = (
-        priced.get("AirItineraryPricingInfo", {})
-        .get("ItinTotalFare", {})
-        .get("TotalFare", {})
-    )
-    total_price = round(float(fare.get("Amount", 0) or 0), 2)
-    price_pp = round(total_price / travelers, 2) if travelers else total_price
-
-    conn = "Nonstop" if stops == 0 else f"{stops}-stop"
-    tradeoff = f"{conn} on {first_out.get('carrier', 'this carrier')}, about ${price_pp:.0f} per person."
-    if recommended:
-        tradeoff += " Best price of the three."
-
-    return {
-        "flight_id": (first_out.get("flight_no", f"OPT{tier}") or f"OPT{tier}").replace(" ", ""),
-        "tier": tier,
-        "carrier": first_out.get("carrier", ""),
-        "flight_no": first_out.get("flight_no", ""),
-        "depart_time": first_out.get("depart_time", ""),
-        "arrive_time": last_out.get("arrive_time", ""),
-        "stops": stops,
-        "price_pp": price_pp,
-        "total_price": total_price,
-        "recommended": recommended,
-        "return_flight_no": first_ret.get("flight_no", ""),
-        "return_depart_time": first_ret.get("depart_time", ""),
-        "return_arrive_time": last_ret.get("arrive_time", ""),
-        "tradeoff": tradeoff,
-    }
-
-
 def get_trip_status() -> dict:
     """TODO: fetch the PNR via Sabre Get Reservation and map it to the trip shape."""
     raise NotImplementedError("Sabre Get Reservation is not integrated yet — set MOCK_MODE=true.")
 
 
+_SEASON_RANK = {"low": 0, "medium": 1, "high": 2}
+
+
+def _seasonality_insight(destination: str) -> str | None:
+    """Real Sabre Travel Seasonality → a spoken insight comparing the trip's two
+    candidate windows (early August vs early October) using live demand ratings.
+
+    Sabre returns weekly Low/Medium/High demand for the destination. We pull the
+    rating for the first week of each month and, if August is busier, say so —
+    real Sabre data backing the "move to October" story. Best-effort: any shape
+    mismatch or error yields None so it never breaks the flight search.
+    """
+    try:
+        token = _get_token()
+        resp = httpx.get(
+            f"{config.SABRE_BASE_URL}/v1/historical/flights/{destination}/seasonality",
+            headers={"Authorization": f"Bearer {token}"},
+            timeout=20,
+        )
+        if resp.status_code != 200:
+            return None
+        weeks = resp.json().get("Seasonality", [])
+
+        def rating_for(month: int) -> str | None:
+            in_month = [w for w in weeks if w.get("WeekStartDate", "")[5:7] == f"{month:02d}"]
+            early = [w for w in in_month if int((w.get("WeekStartDate", "0000-00-00") + "")[8:10] or 99) <= 10]
+            pick = (early or in_month)
+            return pick[0].get("SeasonalityIndicator") if pick else None
+
+        aug, oct_ = rating_for(8), rating_for(10)
+        if aug and oct_:
+            tail = ""
+            if _SEASON_RANK.get(aug.lower(), 1) > _SEASON_RANK.get(oct_.lower(), 1):
+                tail = " — so October is the cheaper window."
+            return (
+                f"Live Sabre demand data rates the first week of August as {aug} "
+                f"and early October as {oct_} for {destination}{tail}"
+            )
+        if aug or oct_:
+            m, r = ("August", aug) if aug else ("October", oct_)
+            return f"Live Sabre demand data rates early {m} as {r} season for {destination}."
+        return None
+    except Exception:
+        return None
+
+
 def search_flights(
     origin: str, destination: str, depart_date: str, return_date: str, travelers: int
 ) -> dict:
-    """Call Sabre air shopping (InstaFlights) for a round trip and map to FlightSearchOut."""
+    """Real Sabre fare check for the route, mapped into FlightSearchOut.
+
+    Sabre CERT can't return full itineraries for this account (InstaFlights cache
+    is empty, BFM isn't provisioned), but the "cheapest fares to a destination"
+    API returns real airlines + prices. We map those into our option shape and
+    attach a live Travel Seasonality insight. A Sabre 404 means "no fares found"
+    (not a missing endpoint), so we degrade to an empty option list, not an error.
+    """
     token = _get_token()
     resp = httpx.get(
-        f"{config.SABRE_BASE_URL}/v1/shop/flights",
+        f"{config.SABRE_BASE_URL}/v1/shop/flights/cheapest/fares/{destination}",
         headers={"Authorization": f"Bearer {token}"},
-        params={
-            "origin": origin,
-            "destination": destination,
-            "departuredate": depart_date,
-            "returndate": return_date,
-            "limit": 3,
-            "sortby": "totalfare",
-            "order": "asc",
-            "pointofsalecountry": "US",
-            "passengercount": travelers,
-        },
+        params={"origin": origin, "pointofsalecountry": "US"},
         timeout=30,
     )
-    resp.raise_for_status()
-    priced = resp.json().get("PricedItineraries", [])[:3]
+    if resp.status_code == 404:  # Sabre 404 = "no fares found", not a missing endpoint
+        fares = []
+    else:
+        resp.raise_for_status()
+        fares = resp.json().get("FareInfo", [])
+    fares = sorted(fares, key=lambda f: f.get("LowestFare", {}).get("Fare", 1e9))[:3]
 
     tiers = ["A", "B", "C"]
-    options = [
-        _map_itinerary(it, tiers[i], travelers, recommended=(i == 0))
-        for i, it in enumerate(priced)
-    ]
+    options = []
+    for i, f in enumerate(fares):
+        low = f.get("LowestFare", {})
+        fare = round(float(low.get("Fare", 0) or 0), 2)
+        codes = low.get("AirlineCodes") or []
+        code = codes[0] if codes else "SB"
+        carrier = _CARRIERS.get(code, code)
+        from_loc = f.get("OriginLocation", origin)
+        options.append({
+            "flight_id": f"{code}{i}",
+            "tier": tiers[i],
+            "carrier": carrier,
+            "flight_no": "",  # cheapest-fares gives fares + airline, not flight numbers
+            "depart_time": "",
+            "arrive_time": "",
+            "stops": 0,
+            "price_pp": fare,
+            "total_price": round(fare * travelers, 2),
+            "recommended": i == 0,
+            "return_flight_no": "",
+            "return_depart_time": "",
+            "return_arrive_time": "",
+            "tradeoff": (
+                f"Live Sabre fare: {carrier} into {destination} from {from_loc}, "
+                f"about ${fare:.0f} per person."
+            ),
+        })
+
     return {
         "request": {
             "origin": origin,
             "destination": destination,
-            "month": "",  # real search is date-driven, not month-keyed
+            "month": "",
             "dates": f"{depart_date} → {return_date}",
             "travelers": travelers,
             "season": "",
-            "source": "Sabre InstaFlights (live)",
+            "source": "Sabre cheapest-fares (live)",
+            "sabre_insight": _seasonality_insight(destination),
         },
         "options": options,
     }

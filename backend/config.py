@@ -39,6 +39,12 @@ SABRE_FLIGHTS_LIVE: bool = _bool_env("SABRE_FLIGHTS_LIVE", False)
 PAYPAL_LIVE: bool = _bool_env("PAYPAL_LIVE", False)
 
 # --- Sabre (CERT / test environment) ---
+# Two ways to auth, in priority order:
+#   1. SABRE_ACCESS_TOKEN — paste a ready-made bearer token from Sabre's "Get
+#      Token" tool. Simplest, but it expires (regenerate when it does).
+#   2. SABRE_CLIENT_ID + SABRE_CLIENT_SECRET — the app auto-fetches + refreshes
+#      tokens itself. Sturdier for a long session.
+SABRE_ACCESS_TOKEN: str = os.getenv("SABRE_ACCESS_TOKEN", "").strip()
 SABRE_CLIENT_ID: str = os.getenv("SABRE_CLIENT_ID", "")
 SABRE_CLIENT_SECRET: str = os.getenv("SABRE_CLIENT_SECRET", "")
 SABRE_BASE_URL: str = os.getenv("SABRE_BASE_URL", "https://api-crt.cert.havail.sabre.com").rstrip("/")

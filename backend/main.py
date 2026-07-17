@@ -381,6 +381,9 @@ class SearchRequestEcho(BaseModel):
     travelers: int
     season: str
     source: str
+    # Populated only by the real Sabre path — a live Travel Seasonality insight
+    # Kiki can read aloud (e.g. cheaper months to fly into Maui). None on mock.
+    sabre_insight: str | None = None
 
 
 class FlightOption(BaseModel):
