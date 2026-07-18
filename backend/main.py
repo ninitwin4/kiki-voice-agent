@@ -386,6 +386,8 @@ class SearchRequestEcho(BaseModel):
     # Populated only by the real Sabre path — a live Travel Seasonality insight
     # Kiki can read aloud (e.g. cheaper months to fly into Maui). None on mock.
     sabre_insight: str | None = None
+    # Where the live proof came from, e.g. "Sabre Flight Shop v1 (live)". None on mock.
+    sabre_source: str | None = None
 
 
 class FlightOption(BaseModel):
@@ -414,6 +416,9 @@ class FlightSearchIn(BaseModel):
 class FlightSearchOut(BaseModel):
     request: SearchRequestEcho
     options: list[FlightOption]
+    # Real Sabre fares for the same route, shown as live proof alongside the
+    # bookable options. None on mock or if the live Sabre call returns nothing.
+    sabre_live_fares: list[FlightOption] | None = None
 
 
 class FlightBookIn(BaseModel):
@@ -651,19 +656,32 @@ async def flights_search(body: FlightSearchIn | None = None) -> dict:
     """Search SFO to Maui (OGG) flights for the group and return three priced options, each with a tradeoff to read aloud."""
     month = _validate_month(body.month) if body and body.month else TRIP["month"]
     travelers = _travelers(TRIP)
-    if config.SABRE_FLIGHTS_LIVE:
-        dates = _CATALOG[month]["dates"]
-        depart = dates["start"]
-        nights = TRIP.get("nights") or dates["nights"]
-        return sabre_client.search_flights(
-            origin="SFO", destination="OGG",
-            depart_date=depart, return_date=_end_date(depart, nights), travelers=travelers,
-        )
     data = _FLIGHTS[month]
-    return {
+    resp = {
         "request": {**data["request"], "travelers": travelers},
+        # The three bookable options are ALWAYS the curated mock set — so booking
+        # (mock flight_ids) can't break and the narrative stays intact.
         "options": [_priced_option(o, travelers) for o in data["options"]],
+        "sabre_live_fares": None,
     }
+    # Hybrid real mode: attach live Sabre fares + a seasonality insight as proof
+    # Kiki reads aloud. Best-effort — a stale token or empty result just omits it,
+    # never breaks the search.
+    if config.SABRE_FLIGHTS_LIVE:
+        try:
+            dates = _CATALOG[month]["dates"]
+            depart = dates["start"]
+            nights = TRIP.get("nights") or dates["nights"]
+            proof = sabre_client.search_flights(
+                origin="SFO", destination="OGG",
+                depart_date=depart, return_date=_end_date(depart, nights), travelers=travelers,
+            )
+            resp["request"]["sabre_insight"] = proof["request"].get("sabre_insight")
+            resp["request"]["sabre_source"] = proof["request"].get("source")
+            resp["sabre_live_fares"] = proof["options"] or None
+        except Exception:
+            pass
+    return resp
 
 
 @app.post("/flights/book", response_model=FlightBookOut)

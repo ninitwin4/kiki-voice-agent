@@ -16,6 +16,16 @@ services:
         value: "true"
       - key: MOCK_DELAY_SECONDS
         value: "1.5"
+      # Hybrid real Sabre: bookable flights stay mock (options can't break), but
+      # search attaches live Sabre fares + seasonality, and /hotel/adjust attaches
+      # real Maui hotels — proof Kiki reads aloud. Needs a fresh SABRE_ACCESS_TOKEN
+      # (paste in the dashboard); a stale token just omits the proof, never breaks.
+      - key: SABRE_FLIGHTS_LIVE
+        value: "true"
+      - key: SABRE_HOTELS_LIVE
+        value: "true"
+      - key: SABRE_ACCESS_TOKEN
+        sync: false
       # Voice-token minting for the UI (the UI's VITE_API_BASE points here).
       - key: VB_API_KEY
         sync: false

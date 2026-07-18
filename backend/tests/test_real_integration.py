@@ -43,19 +43,20 @@ def test_paypal_endpoints_404_when_disabled():
 
 
 @pytest.mark.skipif(not HAS_SABRE, reason="Sabre credentials not set")
-def test_real_sabre_flight_search_maps_to_our_shape():
+def test_real_sabre_hybrid_search_keeps_mock_options_and_adds_live_proof():
     c = _client(SABRE_FLIGHTS_LIVE="true")
-    resp = c.post("/flights/search", json={"month": "august"})
-    assert resp.status_code == 200  # never 500, even if Sabre returns no fares
+    resp = c.post("/flights/search", json={"month": "november"})
+    assert resp.status_code == 200  # never 500, even if Sabre returns nothing
     body = resp.json()
-    assert "Sabre" in body["request"]["source"]
-    # Real Sabre cheapest-fares: carrier + fare are present; flight_no is not
-    # (this API returns fares/airlines, not full itineraries with flight numbers).
-    for o in body["options"]:
-        assert o["carrier"]
-        assert o["price_pp"] > 0
-        assert o["total_price"] > 0
-        assert o["tradeoff"]
+    # The three BOOKABLE options are always the curated mock set (bookable ids).
+    assert len(body["options"]) == 3
+    assert {o["flight_id"] for o in body["options"]} == {"AA511", "AA1620", "AA742"}
+    # Real Sabre proof is attached separately (best-effort — may be None if the
+    # token is stale, which is exactly the graceful-degradation we want).
+    if body.get("sabre_live_fares"):
+        assert body["request"]["sabre_source"]
+        for o in body["sabre_live_fares"]:
+            assert o["carrier"] and o["price_pp"] > 0
 
 
 @pytest.mark.skipif(not HAS_SABRE, reason="Sabre credentials not set")
