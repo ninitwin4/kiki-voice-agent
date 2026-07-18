@@ -17,7 +17,7 @@ services:
       - key: MOCK_DELAY_SECONDS
         value: "1.5"
       # Voice-token minting for the UI (the UI's VITE_API_BASE points here).
-      - key: VOCAL_BRIDGE_API_KEY
+      - key: VB_API_KEY
         sync: false
       - key: VB_AGENT_ID
         value: "98d6dd19-790c-40af-aeaf-28f53bc64ce4"
@@ -69,7 +69,7 @@ services:
         value: "https://api-m.sandbox.paypal.com"
       - key: PAYPAL_CURRENCY
         value: "USD"
-      - key: VOCAL_BRIDGE_API_KEY
+      - key: VB_API_KEY
         sync: false
       - key: VB_AGENT_ID
         value: "98d6dd19-790c-40af-aeaf-28f53bc64ce4"

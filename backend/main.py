@@ -18,6 +18,8 @@ import uuid
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
+import httpx
+
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -602,18 +604,33 @@ class VoiceTokenIn(BaseModel):
 
 
 @app.post("/token")
-async def voice_token(body: VoiceTokenIn | None = None) -> dict:
-    """Mint a short-lived Vocal Bridge voice token for the UI (VB API key stays server-side)."""
-    if not config.VOCAL_BRIDGE_API_KEY:
-        raise HTTPException(
+async def voice_token(body: VoiceTokenIn | None = None) -> JSONResponse:
+    """Mint a short-lived Vocal Bridge voice token for the UI (VB API key stays server-side).
+
+    Returns Vocal Bridge's token response verbatim ({token, livekit_url, room_name,
+    participant_identity, expires_in, agent_mode}). On failure returns a clear
+    { "error": {code, message} } body so the UI can show a connection error.
+    """
+    if not config.VB_API_KEY:
+        return JSONResponse(
             status_code=503,
-            detail="Voice token minting not configured — set VOCAL_BRIDGE_API_KEY.",
+            content={"error": {"code": "not_configured",
+                               "message": "Voice token minting not configured — VB_API_KEY is unset."}},
         )
     name = (body.participant_name if body else None) or "Web User"
     try:
-        return vb_client.mint_token(name)
-    except Exception as exc:  # network / VB error → surface as 502, don't 500
-        raise HTTPException(status_code=502, detail=f"Vocal Bridge token request failed: {exc}")
+        return JSONResponse(status_code=200, content=vb_client.mint_token(name))
+    except httpx.HTTPStatusError as exc:  # VB rejected the request (bad key / agent id)
+        return JSONResponse(
+            status_code=502,
+            content={"error": {"code": "vb_rejected",
+                               "message": f"Vocal Bridge returned HTTP {exc.response.status_code}."}},
+        )
+    except Exception as exc:  # network / timeout — don't 500, keep the shape clear
+        return JSONResponse(
+            status_code=502,
+            content={"error": {"code": "vb_unreachable", "message": str(exc)}},
+        )
 
 
 # --------------------------------------------------------------------------

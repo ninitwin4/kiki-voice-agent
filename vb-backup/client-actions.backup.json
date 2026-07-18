@@ -1,0 +1,49 @@
+[
+  {
+    "name": "agent_state",
+    "direction": "agent_to_app",
+    "description": "Kiki's live state (listening, thinking, speaking, or idle) \u2014 the orb heartbeat."
+  },
+  {
+    "name": "set_stage",
+    "direction": "agent_to_app",
+    "description": "Fired BEFORE a tool call: advance the stage bar and light the relevant card so the 13-40s reasoning wait reads as intentional."
+  },
+  {
+    "name": "update_constraint",
+    "direction": "agent_to_app",
+    "description": "A constraint Kiki heard (dates, budget, kids, rooms, no early flights, weather) as a short human label plus a satisfied flag."
+  },
+  {
+    "name": "flight_options",
+    "direction": "agent_to_app",
+    "description": "The three flight options to render on the flight card, passed through from search_flights."
+  },
+  {
+    "name": "card_update",
+    "direction": "agent_to_app",
+    "description": "A booking tool returned for a vendor (flight, hotel, transport, or activities); the UI refetches /trip/status and re-renders that card."
+  },
+  {
+    "name": "trip_reflow",
+    "direction": "agent_to_app",
+    "description": "The whole trip moved to a new month via change_trip_dates; the UI pulses all cards and refetches everything."
+  },
+  {
+    "name": "payment_confirmed",
+    "direction": "agent_to_app",
+    "description": "Payment captured; the UI flips the payment card to paid and refetches the trip status."
+  },
+  {
+    "name": "user_picked_flight",
+    "behavior": "respond",
+    "direction": "app_to_agent",
+    "description": "The user tapped a flight option in the UI; Kiki confirms and books that flight."
+  },
+  {
+    "name": "user_removed_item",
+    "behavior": "respond",
+    "direction": "app_to_agent",
+    "description": "The user removed a vendor card in the UI; Kiki acknowledges it."
+  }
+]

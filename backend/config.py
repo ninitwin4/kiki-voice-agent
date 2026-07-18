@@ -70,7 +70,8 @@ PAYPAL_CURRENCY: str = os.getenv("PAYPAL_CURRENCY", "USD")
 
 # --- Vocal Bridge (voice-token minting for the UI's /token route) ---
 # The VB API key must stay server-side; the UI calls our /token, we call VB.
-VOCAL_BRIDGE_API_KEY: str = os.getenv("VOCAL_BRIDGE_API_KEY", "")
+# Canonical env var is VB_API_KEY (VOCAL_BRIDGE_API_KEY kept as a fallback).
+VB_API_KEY: str = os.getenv("VB_API_KEY", "") or os.getenv("VOCAL_BRIDGE_API_KEY", "")
 # Account-level VB keys require the agent id; default to the Maui "KiKi" agent.
 VB_AGENT_ID: str = os.getenv("VB_AGENT_ID", "98d6dd19-790c-40af-aeaf-28f53bc64ce4")
 VB_TOKEN_URL: str = os.getenv("VB_TOKEN_URL", "https://vocalbridgeai.com/api/v1/token")

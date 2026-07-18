@@ -11,10 +11,10 @@ from . import config
 
 
 def mint_token(participant_name: str = "Web User") -> dict:
-    if not config.VOCAL_BRIDGE_API_KEY:
-        raise RuntimeError("VOCAL_BRIDGE_API_KEY not set.")
+    if not config.VB_API_KEY:
+        raise RuntimeError("VB_API_KEY not set.")
     headers = {
-        "X-API-Key": config.VOCAL_BRIDGE_API_KEY,
+        "X-API-Key": config.VB_API_KEY,
         "Content-Type": "application/json",
     }
     # Account-level keys need the agent id; agent-scoped keys ignore it.
