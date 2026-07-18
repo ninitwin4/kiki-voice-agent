@@ -1,15 +1,15 @@
 """Kiki — voice-agent travel demo backend (project: complete-trip).
 
 Plans a 5-person Maui group trip (2 couples + 1 child) SFO⇄OGG with
-Sabre-shaped mock data. The demo plans the first week of August, hits a
-budget constraint (peak season), then rebooks to the first week of October —
-and that date change cascades across flights, hotel, transport, and
-activities so /trip/status re-flows the whole trip.
+Sabre-shaped mock data. The demo plans the first week of November, Kiki checks
+the weather and finds it's Maui's rainy season, then rebooks to the first week
+of August (dry) — and that date change cascades across flights, hotel,
+transport, and activities so /trip/status re-flows the whole trip.
 
 All state lives in a single in-memory TRIP object. Month-specific pricing
-lives in mocks/catalog.json + mocks/flight_search.json, so August and
-October can't drift apart. POST /demo/reset restores the initial
-August-planning state so the demo can be rehearsed repeatedly.
+lives in mocks/catalog.json + mocks/flight_search.json, so November and
+August can't drift apart. POST /demo/reset restores the initial
+November-planning state so the demo can be rehearsed repeatedly.
 """
 import asyncio
 import copy
@@ -23,7 +23,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from . import config, paypal_client, sabre_client
+from . import config, paypal_client, sabre_client, vb_client
 
 MOCKS_DIR = Path(__file__).parent / "mocks"
 
@@ -31,7 +31,7 @@ _TRIP_HEADER: dict = json.loads((MOCKS_DIR / "trip.json").read_text())
 _CATALOG: dict = json.loads((MOCKS_DIR / "catalog.json").read_text())
 _FLIGHTS: dict = json.loads((MOCKS_DIR / "flight_search.json").read_text())
 
-MONTHS = tuple(_CATALOG.keys())  # ("august", "october")
+MONTHS = tuple(_CATALOG.keys())  # ("november", "august")
 
 
 # --------------------------------------------------------------------------
@@ -405,7 +405,7 @@ class FlightOption(BaseModel):
 
 class FlightSearchIn(BaseModel):
     month: str | None = Field(
-        None, description="Which month to price, 'august' or 'october'. Defaults to the trip's current month."
+        None, description="Which month to price, 'november' or 'august'. Defaults to the trip's current month."
     )
 
 
@@ -464,7 +464,7 @@ class ActivitiesBookOut(BaseModel):
 
 
 class TripRebookIn(BaseModel):
-    month: str = Field(..., description="Move the whole trip to this month: 'august' or 'october'.")
+    month: str = Field(..., description="Move the whole trip to this month: 'november' or 'august'.")
 
 
 class TripRebookOut(BaseModel):
@@ -595,6 +595,25 @@ async def not_implemented_handler(request: Request, exc: NotImplementedError) ->
 async def health() -> dict:
     """Self-describing health check — says whether this URL is the mock or real service."""
     return {"status": "ok", "mock_mode": config.MOCK_MODE, **config.mode()}
+
+
+class VoiceTokenIn(BaseModel):
+    participant_name: str | None = Field(None, description="Display name for the voice session.")
+
+
+@app.post("/token")
+async def voice_token(body: VoiceTokenIn | None = None) -> dict:
+    """Mint a short-lived Vocal Bridge voice token for the UI (VB API key stays server-side)."""
+    if not config.VOCAL_BRIDGE_API_KEY:
+        raise HTTPException(
+            status_code=503,
+            detail="Voice token minting not configured — set VOCAL_BRIDGE_API_KEY.",
+        )
+    name = (body.participant_name if body else None) or "Web User"
+    try:
+        return vb_client.mint_token(name)
+    except Exception as exc:  # network / VB error → surface as 502, don't 500
+        raise HTTPException(status_code=502, detail=f"Vocal Bridge token request failed: {exc}")
 
 
 # --------------------------------------------------------------------------
@@ -949,16 +968,20 @@ async def paypal_capture_order(body: PayPalCaptureIn) -> dict:
 
 @app.post("/demo/reset", response_model=ResetOut)
 async def demo_reset() -> dict:
-    """Reset the demo to its initial state, with the group planning the first week of August and nothing booked yet."""
+    """Reset the demo to its initial state, with the group planning the first week of November and nothing booked yet."""
     TRIP.clear()
     TRIP.update(_build_initial_trip())
     totals = _totals(TRIP)
+    budget_line = (
+        f"{totals['over_budget_by']:.2f} over the {totals['budget']:.2f} budget"
+        if not totals["within_budget"]
+        else f"within the {totals['budget']:.2f} budget"
+    )
     return {
         "reset": True,
         "message": (
             f"Trip restored to planning {TRIP['dates']['label']} "
             f"({TRIP['dates']['start']} to {TRIP['dates']['end']}), nothing booked. "
-            f"August quote {totals['trip_total']:.2f} USD — "
-            f"{totals['over_budget_by']:.2f} over the {totals['budget']:.2f} budget."
+            f"Quote {totals['trip_total']:.2f} USD — {budget_line}."
         ),
     }

@@ -1,12 +1,73 @@
 {
+  "november": {
+    "request": {
+      "origin": "SFO",
+      "destination": "OGG",
+      "month": "november",
+      "dates": "2026-11-02 → 2026-11-07",
+      "travelers": 5,
+      "season": "rainy",
+      "source": "BargainFinderMax (mock)"
+    },
+    "options": [
+      {
+        "flight_id": "AA511",
+        "tier": "A",
+        "carrier": "American Airlines",
+        "flight_no": "AA 511",
+        "depart_time": "08:20",
+        "arrive_time": "10:55",
+        "stops": 0,
+        "price_pp": 596.0,
+        "total_price": 2980.0,
+        "recommended": true,
+        "return_flight_no": "AA 512",
+        "return_depart_time": "14:30",
+        "return_arrive_time": "22:10",
+        "tradeoff": "Nonstop both ways with an afternoon flight home — easiest with a kid, and off-season pricing at $596 per person."
+      },
+      {
+        "flight_id": "AA1620",
+        "tier": "B",
+        "carrier": "American Airlines",
+        "flight_no": "AA 1620",
+        "depart_time": "06:55",
+        "arrive_time": "12:30",
+        "stops": 1,
+        "price_pp": 512.0,
+        "total_price": 2560.0,
+        "recommended": false,
+        "return_flight_no": "AA 1621",
+        "return_depart_time": "13:15",
+        "return_arrive_time": "22:45",
+        "tradeoff": "Cheapest of the three, but a Los Angeles connection adds about two hours each way with a tired kid."
+      },
+      {
+        "flight_id": "AA742",
+        "tier": "C",
+        "carrier": "American Airlines",
+        "flight_no": "AA 742",
+        "depart_time": "09:45",
+        "arrive_time": "12:20",
+        "stops": 0,
+        "price_pp": 571.0,
+        "total_price": 2855.0,
+        "recommended": false,
+        "return_flight_no": "AA 743",
+        "return_depart_time": "06:05",
+        "return_arrive_time": "13:45",
+        "tradeoff": "Nonstop and a little cheaper, but the return leaves OGG at 6:05 AM — a 4 AM wake-up for all five, including the child."
+      }
+    ]
+  },
   "august": {
     "request": {
       "origin": "SFO",
       "destination": "OGG",
       "month": "august",
-      "dates": "2026-08-03 → 2026-08-10",
+      "dates": "2026-08-05 → 2026-08-10",
       "travelers": 5,
-      "season": "peak",
+      "season": "dry",
       "source": "BargainFinderMax (mock)"
     },
     "options": [
@@ -18,13 +79,13 @@
         "depart_time": "08:15",
         "arrive_time": "10:50",
         "stops": 0,
-        "price_pp": 782.0,
-        "total_price": 3910.0,
+        "price_pp": 720.0,
+        "total_price": 3600.0,
         "recommended": true,
         "return_flight_no": "AA 290",
         "return_depart_time": "14:25",
         "return_arrive_time": "22:05",
-        "tradeoff": "Nonstop both ways with a civilized 2:25 PM flight home — the easiest option with a five-year-old, but the priciest at $782 per person."
+        "tradeoff": "Nonstop both ways with a civilized 2:25 PM flight home — the easiest option with a five-year-old, at $720 per person in peak season."
       },
       {
         "flight_id": "AA1412",
@@ -40,7 +101,7 @@
         "return_flight_no": "AA 1413",
         "return_depart_time": "13:10",
         "return_arrive_time": "22:40",
-        "tradeoff": "Cheapest of the three and saves the group $670, but a Los Angeles connection adds about two hours each way with a tired kid."
+        "tradeoff": "Cheapest of the three and saves the group $360, but a Los Angeles connection adds about two hours each way with a tired kid."
       },
       {
         "flight_id": "AA674",
@@ -50,74 +111,13 @@
         "depart_time": "09:40",
         "arrive_time": "12:15",
         "stops": 0,
-        "price_pp": 731.0,
-        "total_price": 3655.0,
+        "price_pp": 690.0,
+        "total_price": 3450.0,
         "recommended": false,
         "return_flight_no": "AA 675",
         "return_depart_time": "06:05",
         "return_arrive_time": "13:45",
-        "tradeoff": "Nonstop and $255 cheaper than the 8:15 departure, but the return leaves OGG at 6:05 AM — a 4 AM wake-up for all five, including the child."
-      }
-    ]
-  },
-  "october": {
-    "request": {
-      "origin": "SFO",
-      "destination": "OGG",
-      "month": "october",
-      "dates": "2026-10-05 → 2026-10-12",
-      "travelers": 5,
-      "season": "shoulder",
-      "source": "BargainFinderMax (mock)"
-    },
-    "options": [
-      {
-        "flight_id": "AA293",
-        "tier": "A",
-        "carrier": "American Airlines",
-        "flight_no": "AA 293",
-        "depart_time": "08:40",
-        "arrive_time": "11:15",
-        "stops": 0,
-        "price_pp": 596.0,
-        "total_price": 2980.0,
-        "recommended": true,
-        "return_flight_no": "AA 294",
-        "return_depart_time": "14:50",
-        "return_arrive_time": "22:30",
-        "tradeoff": "Nonstop both ways at shoulder-season pricing — $930 less than the same nonstop in August, and still an afternoon flight home."
-      },
-      {
-        "flight_id": "AA1428",
-        "tier": "B",
-        "carrier": "American Airlines",
-        "flight_no": "AA 1428",
-        "depart_time": "06:50",
-        "arrive_time": "12:20",
-        "stops": 1,
-        "price_pp": 487.0,
-        "total_price": 2435.0,
-        "recommended": false,
-        "return_flight_no": "AA 1429",
-        "return_depart_time": "13:35",
-        "return_arrive_time": "23:05",
-        "tradeoff": "Cheapest overall at $487 per person, but the Los Angeles connection is still a two-hour penalty each way."
-      },
-      {
-        "flight_id": "AA682",
-        "tier": "C",
-        "carrier": "American Airlines",
-        "flight_no": "AA 682",
-        "depart_time": "10:05",
-        "arrive_time": "12:40",
-        "stops": 0,
-        "price_pp": 561.0,
-        "total_price": 2805.0,
-        "recommended": false,
-        "return_flight_no": "AA 683",
-        "return_depart_time": "06:20",
-        "return_arrive_time": "14:00",
-        "tradeoff": "Nonstop and cheaper than the morning departure, but the return is another 6:20 AM departure — the same pre-dawn problem the group already rejected."
+        "tradeoff": "Nonstop and cheaper than the 8:15 departure, but the return leaves OGG at 6:05 AM — the pre-dawn wake-up the group wants to avoid."
       }
     ]
   }

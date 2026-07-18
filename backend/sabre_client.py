@@ -75,11 +75,11 @@ _SEASON_RANK = {"low": 0, "medium": 1, "high": 2}
 
 def _seasonality_insight(destination: str) -> str | None:
     """Real Sabre Travel Seasonality → a spoken insight comparing the trip's two
-    candidate windows (early August vs early October) using live demand ratings.
+    candidate windows (early November vs early August) using live demand ratings.
 
     Sabre returns weekly Low/Medium/High demand for the destination. We pull the
-    rating for the first week of each month and, if August is busier, say so —
-    real Sabre data backing the "move to October" story. Best-effort: any shape
+    rating for the first week of each month — real Sabre data alongside the
+    weather-driven "move from November to August" story. Best-effort: any shape
     mismatch or error yields None so it never breaks the flight search.
     """
     try:
@@ -99,17 +99,14 @@ def _seasonality_insight(destination: str) -> str | None:
             pick = (early or in_month)
             return pick[0].get("SeasonalityIndicator") if pick else None
 
-        aug, oct_ = rating_for(8), rating_for(10)
-        if aug and oct_:
-            tail = ""
-            if _SEASON_RANK.get(aug.lower(), 1) > _SEASON_RANK.get(oct_.lower(), 1):
-                tail = " — so October is the cheaper window."
+        nov, aug = rating_for(11), rating_for(8)
+        if nov and aug:
             return (
-                f"Live Sabre demand data rates the first week of August as {aug} "
-                f"and early October as {oct_} for {destination}{tail}"
+                f"Live Sabre demand data rates the first week of November as {nov} "
+                f"and early August as {aug} for {destination}."
             )
-        if aug or oct_:
-            m, r = ("August", aug) if aug else ("October", oct_)
+        if nov or aug:
+            m, r = ("November", nov) if nov else ("August", aug)
             return f"Live Sabre demand data rates early {m} as {r} season for {destination}."
         return None
     except Exception:

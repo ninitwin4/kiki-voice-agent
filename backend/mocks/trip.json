@@ -1,8 +1,8 @@
 {
   "trip_id": "TRIP-MAUI-2026",
-  "trip_name": "Maui group trip — 2 couples + 1 child",
+  "trip_name": "Maui trip — Ni Ni & RC",
   "status": "PLANNING",
-  "month": "august",
+  "month": "november",
   "origin": "SFO",
   "destination": "OGG",
   "party": {
@@ -10,13 +10,13 @@
     "children": 1,
     "total": 5,
     "rooms": 2,
-    "note": "Two couples plus one five-year-old. Two rooms; the child shares with parents.",
+    "note": "Two parties travelling together: Ni Ni's group of 2 and RC's group of 3 (RC, partner, and one five-year-old). Two rooms.",
     "travelers": [
-      { "name": "Nina Reyes", "type": "adult" },
-      { "name": "Marcus Reyes", "type": "adult" },
-      { "name": "Priya Shah", "type": "adult" },
-      { "name": "Dev Shah", "type": "adult" },
-      { "name": "Ollie Shah", "type": "child", "age": 5 }
+      { "name": "Ni Ni", "type": "adult" },
+      { "name": "Ana", "type": "adult" },
+      { "name": "RC", "type": "adult" },
+      { "name": "Mia", "type": "adult" },
+      { "name": "Leo", "type": "child", "age": 5 }
     ]
   },
   "budget": {
@@ -26,8 +26,8 @@
   },
   "preferences": {
     "no_early_return": true,
-    "note": "The group has ruled out pre-dawn return flights — nothing departing OGG before about 10 AM on the way home."
+    "note": "RC won't travel in the rain, so the trip avoids Maui's rainy season. RC also likes local Hawaiian cuisine (one of RC's party is vegetarian). Ni Ni likes a reminder to pack deodorant and a personal hair-conditioning mask. The group also avoids pre-dawn return flights."
   },
-  "constraint": "The first week of August is peak season on Maui. The full August package prices out around $15,356 — roughly $3,356 over the group's $12,000 budget. The same trip in the first week of October (shoulder season) comes in near $11,798, inside budget.",
+  "constraint": "The group first looked at the first week of November, but that's Maui's rainy season — and RC won't travel in the rain. Moving to the first week of August, which is warm and dry.",
   "payments": []
 }

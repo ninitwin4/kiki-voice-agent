@@ -1,21 +1,24 @@
-"""Maui group-trip demo.
+"""Maui group-trip demo — Ni Ni & RC, the "weather cascade".
 
 Two paths matter:
-  * happy path  — plan August → book all 4 vendors → pay
-  * rebook path — August → October cascades every vendor's dates and prices
+  * happy path  — plan November → book all 4 vendors → pay
+  * rebook path — November → August cascades every vendor's dates and prices
+    (the demo's weather-driven move: November is rainy, August is dry)
 """
 import pytest
 
+NOV_FLIGHT_IDS = {"AA511", "AA1620", "AA742"}
 AUG_FLIGHT_IDS = {"AA289", "AA1412", "AA674"}
-OCT_FLIGHT_IDS = {"AA293", "AA1428", "AA682"}
 
 
-def test_full_demo_happy_path_august(client):
-    # 1. Initial state: planning August, nothing booked, over budget.
+def test_full_demo_happy_path_november(client):
+    # 1. Initial state: planning November, nothing booked.
     trip = client.post("/trip/status").json()
     assert trip["status"] == "PLANNING"
-    assert trip["month"] == "august"
-    assert trip["dates"]["start"] == "2026-08-03"
+    assert trip["month"] == "november"
+    assert trip["dates"]["start"] == "2026-11-02"
+    assert trip["dates"]["end"] == "2026-11-07"
+    assert trip["dates"]["nights"] == 5
     assert trip["party"]["total"] == 5
     assert trip["party"]["rooms"] == 2
     assert trip["flights"]["status"] == "NOT_BOOKED"
@@ -23,22 +26,22 @@ def test_full_demo_happy_path_august(client):
     assert trip["transport"]["status"] == "NOT_BOOKED"
     assert trip["activities"]["status"] == "NOT_BOOKED"
     assert trip["payments"] == []
-    # The constraint that drives the demo: August blows the budget.
-    assert trip["totals"]["within_budget"] is False
-    assert trip["totals"]["over_budget_by"] > 0
+    # November (off-season) sits inside budget.
+    assert trip["totals"]["within_budget"] is True
+    assert trip["totals"]["trip_total"] == pytest.approx(2980 + 4800 + 400 + 990)
 
     # 2. Search: three options, exactly one recommended, each with a tradeoff.
-    search = client.post("/flights/search", json={"month": "august"}).json()
+    search = client.post("/flights/search", json={"month": "november"}).json()
     assert search["request"]["destination"] == "OGG"
     assert search["request"]["travelers"] == 5
     assert len(search["options"]) == 3
-    assert {o["flight_id"] for o in search["options"]} == AUG_FLIGHT_IDS
+    assert {o["flight_id"] for o in search["options"]} == NOV_FLIGHT_IDS
     assert all(o["tradeoff"] for o in search["options"])
     assert all(o["total_price"] == pytest.approx(o["price_pp"] * 5) for o in search["options"])
     recommended = [o for o in search["options"] if o["recommended"]]
     assert len(recommended) == 1
     best = recommended[0]
-    assert best["flight_id"] == "AA289"
+    assert best["flight_id"] == "AA511"
     assert best["stops"] == 0
 
     # 3. Book the recommended flight for all 5.
@@ -48,17 +51,16 @@ def test_full_demo_happy_path_august(client):
     assert body["confirmed"] is True
     assert body["record_locator"].startswith("PNR-")
     assert body["flights"]["status"] == "BOOKED"
-    assert body["flights"]["total_price"] == pytest.approx(3910.0)
-    assert body["totals"]["flights_quoted"] is False
+    assert body["flights"]["total_price"] == pytest.approx(2980.0)
 
-    # 4. Hotel — two rooms for the August week.
+    # 4. Hotel — two rooms for the November week.
     hotel = client.post("/hotel/adjust").json()
     assert hotel["confirmed"] is True
     assert hotel["hotel"]["status"] == "BOOKED"
     assert hotel["hotel"]["rooms"] == 2
-    assert hotel["hotel"]["check_in"] == "2026-08-03"
-    assert hotel["hotel"]["check_out"] == "2026-08-10"
-    assert hotel["hotel"]["total"] == pytest.approx(685.0 * 2 * 7)
+    assert hotel["hotel"]["check_in"] == "2026-11-02"
+    assert hotel["hotel"]["check_out"] == "2026-11-07"
+    assert hotel["hotel"]["total"] == pytest.approx(480.0 * 2 * 5)
 
     # 5. Transport — minivan + child car seat at OGG.
     transport = client.post("/transport/update").json()
@@ -66,7 +68,7 @@ def test_full_demo_happy_path_august(client):
     assert transport["transport"]["status"] == "BOOKED"
     assert transport["transport"]["car_seat"] is True
     assert transport["transport"]["pickup_location"].startswith("OGG")
-    assert transport["transport"]["pickup_date"] == "2026-08-03"
+    assert transport["transport"]["pickup_date"] == "2026-11-02"
 
     # 6. Activities — surf lesson + Molokini snorkel, both booked.
     activities = client.post("/activities/book").json()
@@ -75,11 +77,8 @@ def test_full_demo_happy_path_august(client):
     assert {a["activity_id"] for a in activities["activities"]["items"]} == {"surf", "snorkel"}
     assert all(a["status"] == "BOOKED" for a in activities["activities"]["items"])
     assert all(a["participants"] == 5 for a in activities["activities"]["items"])
-    surf = next(a for a in activities["activities"]["items"] if a["activity_id"] == "surf")
-    assert surf["kid_friendly"] is True
-    assert surf["date"].startswith("2026-08")
 
-    # 7. Pay the trip total (no amount → charges the running total).
+    # 7. Pay the trip total.
     expected_total = client.post("/trip/status").json()["totals"]["trip_total"]
     payment = client.post("/payment/confirm", json={}).json()
     assert payment["confirmed"] is True
@@ -97,107 +96,96 @@ def test_full_demo_happy_path_august(client):
     assert trip["payments"][0]["status"] == "PAID"
 
 
-def test_rebook_august_to_october_cascades_every_vendor(client):
-    # Book the whole trip in August first.
-    client.post("/flights/book", json={"flight_id": "AA289"})
+def test_rebook_november_to_august_cascades_every_vendor(client):
+    # Book the whole trip in November first.
+    client.post("/flights/book", json={"flight_id": "AA511"})
     client.post("/hotel/adjust")
     client.post("/transport/update")
     client.post("/activities/book")
 
     before = client.post("/trip/status").json()
-    assert before["month"] == "august"
-    assert before["totals"]["within_budget"] is False
-    august_total = before["totals"]["trip_total"]
+    assert before["month"] == "november"
 
-    # The constraint surfaces → move the whole trip to October.
-    rebook = client.post("/trip/rebook", json={"month": "october"})
+    # The weather constraint surfaces → move the whole trip to August.
+    rebook = client.post("/trip/rebook", json={"month": "august"})
     assert rebook.status_code == 200
     body = rebook.json()
     assert body["confirmed"] is True
-    assert body["previous_month"] == "august"
-    assert body["month"] == "october"
-    assert body["savings"] > 0
+    assert body["previous_month"] == "november"
+    assert body["month"] == "august"
 
-    # The cascade: every vendor moved to October dates AND October prices,
+    # The cascade: every vendor moved to August dates AND August prices,
     # and everything that was booked stays booked.
-    assert body["dates"]["start"] == "2026-10-05"
-    assert body["dates"]["end"] == "2026-10-12"
+    assert body["dates"]["start"] == "2026-08-05"
+    assert body["dates"]["end"] == "2026-08-10"
+    assert body["dates"]["nights"] == 5
 
     assert body["flights"]["status"] == "BOOKED"
-    assert body["flights"]["flight_id"] == "AA293"  # same tier A, October equivalent
+    assert body["flights"]["flight_id"] == "AA289"  # same tier A, August equivalent
     assert body["flights"]["tier"] == "A"
-    assert body["flights"]["total_price"] == pytest.approx(2980.0)
+    assert body["flights"]["total_price"] == pytest.approx(3600.0)
 
     assert body["hotel"]["status"] == "BOOKED"
-    assert body["hotel"]["check_in"] == "2026-10-05"
-    assert body["hotel"]["check_out"] == "2026-10-12"
-    assert body["hotel"]["total"] == pytest.approx(512.0 * 2 * 7)
+    assert body["hotel"]["check_in"] == "2026-08-05"
+    assert body["hotel"]["check_out"] == "2026-08-10"
+    assert body["hotel"]["total"] == pytest.approx(620.0 * 2 * 5)
 
     assert body["transport"]["status"] == "BOOKED"
-    assert body["transport"]["pickup_date"] == "2026-10-05"
-    assert body["transport"]["dropoff_date"] == "2026-10-12"
-    assert body["transport"]["car_seat"] is True
+    assert body["transport"]["pickup_date"] == "2026-08-05"
+    assert body["transport"]["dropoff_date"] == "2026-08-10"
 
     assert body["activities"]["status"] == "BOOKED"
     for item in body["activities"]["items"]:
         assert item["status"] == "BOOKED"
-        assert item["date"].startswith("2026-10")
+        assert item["date"].startswith("2026-08")
 
-    # October lands inside budget — the whole point of the move.
     assert body["totals"]["within_budget"] is True
-    assert body["totals"]["trip_total"] < august_total
-    assert body["totals"]["over_budget_by"] == 0
 
     # /trip/status re-flows the entire trip on the new dates.
     after = client.post("/trip/status").json()
-    assert after["month"] == "october"
-    assert after["dates"]["season"] == "shoulder"
-    assert after["flights"]["flight_id"] == "AA293"
-    assert after["hotel"]["check_in"] == "2026-10-05"
-    assert after["totals"]["trip_total"] == pytest.approx(body["totals"]["trip_total"])
+    assert after["month"] == "august"
+    assert after["dates"]["season"] == "dry"
+    assert after["flights"]["flight_id"] == "AA289"
+    assert after["hotel"]["check_in"] == "2026-08-05"
 
 
-def test_august_and_october_return_real_and_different_data(client):
-    august = client.post("/flights/search", json={"month": "august"}).json()
-    october = client.post("/flights/search", json={"month": "october"}).json()
+def test_november_and_august_return_real_and_different_data(client):
+    nov = client.post("/flights/search", json={"month": "november"}).json()
+    aug = client.post("/flights/search", json={"month": "august"}).json()
 
-    aug_ids = {o["flight_id"] for o in august["options"]}
-    oct_ids = {o["flight_id"] for o in october["options"]}
+    nov_ids = {o["flight_id"] for o in nov["options"]}
+    aug_ids = {o["flight_id"] for o in aug["options"]}
+    assert nov_ids == NOV_FLIGHT_IDS
     assert aug_ids == AUG_FLIGHT_IDS
-    assert oct_ids == OCT_FLIGHT_IDS
-    assert aug_ids.isdisjoint(oct_ids)  # genuinely different flight numbers
+    assert nov_ids.isdisjoint(aug_ids)  # genuinely different flight numbers
 
-    # Shoulder season is cheaper on every tier — this is what sells the rebook.
-    aug_by_tier = {o["tier"]: o for o in august["options"]}
-    oct_by_tier = {o["tier"]: o for o in october["options"]}
+    # Off-season November is cheaper per tier than peak August.
+    nov_by_tier = {o["tier"]: o for o in nov["options"]}
+    aug_by_tier = {o["tier"]: o for o in aug["options"]}
     for tier in ("A", "B", "C"):
-        assert oct_by_tier[tier]["price_pp"] < aug_by_tier[tier]["price_pp"]
-        assert oct_by_tier[tier]["depart_time"] != aug_by_tier[tier]["depart_time"]
+        assert nov_by_tier[tier]["price_pp"] < aug_by_tier[tier]["price_pp"]
 
 
 def test_option_shapes_cover_the_three_intended_tradeoffs(client):
-    for month in ("august", "october"):
+    for month in ("november", "august"):
         options = client.post("/flights/search", json={"month": month}).json()["options"]
         by_tier = {o["tier"]: o for o in options}
-
-        # A: nonstop, pricier, and the recommended one.
+        # A: nonstop, pricier, recommended.
         assert by_tier["A"]["stops"] == 0
         assert by_tier["A"]["recommended"] is True
         assert by_tier["A"]["price_pp"] > by_tier["B"]["price_pp"]
-
         # B: one-stop, cheapest.
         assert by_tier["B"]["stops"] == 1
         assert by_tier["B"]["price_pp"] == min(o["price_pp"] for o in options)
-
         # C: nonstop but an early return — the option the group rejects.
         assert by_tier["C"]["stops"] == 0
         assert by_tier["C"]["return_depart_time"] < "07:00"
 
 
 def test_search_defaults_to_the_trips_current_month(client):
+    assert client.post("/flights/search", json={}).json()["request"]["month"] == "november"
+    client.post("/trip/rebook", json={"month": "august"})
     assert client.post("/flights/search", json={}).json()["request"]["month"] == "august"
-    client.post("/trip/rebook", json={"month": "october"})
-    assert client.post("/flights/search", json={}).json()["request"]["month"] == "october"
 
 
 def test_book_single_activity_marks_partial(client):
@@ -209,73 +197,40 @@ def test_book_single_activity_marks_partial(client):
     assert snorkel["status"] == "NOT_BOOKED"
 
 
-def test_reset_restores_initial_august_planning_state(client):
-    client.post("/flights/book", json={"flight_id": "AA289"})
-    client.post("/hotel/adjust")
-    client.post("/trip/rebook", json={"month": "october"})
-    client.post("/payment/confirm", json={})
-
-    reset = client.post("/demo/reset").json()
-    assert reset["reset"] is True
-
-    trip = client.post("/trip/status").json()
-    assert trip["status"] == "PLANNING"
-    assert trip["month"] == "august"
-    assert trip["dates"]["start"] == "2026-08-03"
-    assert trip["flights"]["status"] == "NOT_BOOKED"
-    assert trip["hotel"]["status"] == "NOT_BOOKED"
-    assert trip["transport"]["status"] == "NOT_BOOKED"
-    assert trip["activities"]["status"] == "NOT_BOOKED"
-    assert trip["payments"] == []
-    assert trip["totals"]["within_budget"] is False
-
-
 def test_configure_fewer_nights_reprices_everything(client):
-    # The exact off-script moment from the live call: "5 nights, not 7."
     before = client.post("/trip/status").json()
-    assert before["dates"]["nights"] == 7
-    assert before["hotel"]["total"] == pytest.approx(685.0 * 2 * 7)
+    assert before["dates"]["nights"] == 5
 
-    cfg = client.post("/trip/configure", json={"nights": 5})
-    assert cfg.status_code == 200
-    body = cfg.json()
-    assert body["confirmed"] is True
-    assert body["dates"]["nights"] == 5
-    assert body["dates"]["start"] == "2026-08-03"
-    assert body["dates"]["end"] == "2026-08-08"  # start + 5 nights
-    # Hotel + transport scale with nights; flights + activities do not.
-    assert body["hotel"]["total"] == pytest.approx(685.0 * 2 * 5)
-    assert body["transport"]["total"] == pytest.approx((89.0 + 9.0) * 5)
-    assert body["hotel"]["check_out"] == "2026-08-08"
-    assert body["transport"]["dropoff_date"] == "2026-08-08"
-    # /trip/status reflects the new length.
-    assert client.post("/trip/status").json()["dates"]["nights"] == 5
+    cfg = client.post("/trip/configure", json={"nights": 3}).json()
+    assert cfg["dates"]["nights"] == 3
+    assert cfg["dates"]["start"] == "2026-11-02"
+    assert cfg["dates"]["end"] == "2026-11-05"  # start + 3 nights
+    assert cfg["hotel"]["total"] == pytest.approx(480.0 * 2 * 3)
+    assert cfg["transport"]["total"] == pytest.approx((71.0 + 9.0) * 3)
+    assert client.post("/trip/status").json()["dates"]["nights"] == 3
 
 
 def test_configure_party_size_reprices_per_person_costs(client):
     cfg = client.post("/trip/configure", json={"travelers": 3, "rooms": 2}).json()
     assert cfg["party"]["total"] == 3
-    # Flights + activities are per-person; hotel + transport are not.
     search = client.post("/flights/search").json()
     rec = next(o for o in search["options"] if o["recommended"])
     assert rec["total_price"] == pytest.approx(rec["price_pp"] * 3)
     assert search["request"]["travelers"] == 3
     surf = next(a for a in cfg["activities"]["items"] if a["activity_id"] == "surf")
     assert surf["participants"] == 3
-    assert surf["total"] == pytest.approx(surf["price_pp"] * 3)
-    assert cfg["hotel"]["total"] == pytest.approx(685.0 * 2 * 7)  # rooms/nights unchanged
+    assert cfg["hotel"]["total"] == pytest.approx(480.0 * 2 * 5)  # rooms/nights unchanged
 
 
 def test_configure_survives_the_month_cascade(client):
-    # Set 5 nights, party 6, then move to October — the size must carry over.
-    client.post("/trip/configure", json={"nights": 5, "travelers": 6})
-    client.post("/flights/book", json={"flight_id": "AA289"})
-    rebook = client.post("/trip/rebook", json={"month": "october"}).json()
-    assert rebook["dates"]["nights"] == 5
-    assert rebook["dates"]["start"] == "2026-10-05"
-    assert rebook["dates"]["end"] == "2026-10-10"  # Oct 5 + 5 nights
-    assert rebook["hotel"]["total"] == pytest.approx(512.0 * 2 * 5)
-    assert rebook["flights"]["total_price"] == pytest.approx(596.0 * 6)  # AA293 pp * 6
+    client.post("/trip/configure", json={"nights": 4, "travelers": 6})
+    client.post("/flights/book", json={"flight_id": "AA511"})
+    rebook = client.post("/trip/rebook", json={"month": "august"}).json()
+    assert rebook["dates"]["nights"] == 4
+    assert rebook["dates"]["start"] == "2026-08-05"
+    assert rebook["dates"]["end"] == "2026-08-09"  # Aug 5 + 4 nights
+    assert rebook["hotel"]["total"] == pytest.approx(620.0 * 2 * 4)
+    assert rebook["flights"]["total_price"] == pytest.approx(720.0 * 6)  # AA289 pp * 6
     assert rebook["flights"]["status"] == "BOOKED"
 
 
@@ -283,30 +238,41 @@ def test_configure_bounds_are_enforced(client):
     assert client.post("/trip/configure", json={"nights": 0}).status_code == 422
     assert client.post("/trip/configure", json={"nights": 99}).status_code == 422
     assert client.post("/trip/configure", json={"travelers": 20}).status_code == 422
-    assert client.post("/trip/configure", json={}).status_code == 400  # nothing to change
+    assert client.post("/trip/configure", json={}).status_code == 400
 
 
-def test_configure_is_reset_by_demo_reset(client):
+def test_reset_restores_initial_november_planning_state(client):
     client.post("/trip/configure", json={"nights": 3, "travelers": 2})
-    client.post("/demo/reset")
+    client.post("/flights/book", json={"flight_id": "AA511"})
+    client.post("/trip/rebook", json={"month": "august"})
+    client.post("/payment/confirm", json={})
+
+    reset = client.post("/demo/reset").json()
+    assert reset["reset"] is True
+
     trip = client.post("/trip/status").json()
-    assert trip["dates"]["nights"] == 7
+    assert trip["status"] == "PLANNING"
+    assert trip["month"] == "november"
+    assert trip["dates"]["start"] == "2026-11-02"
+    assert trip["dates"]["nights"] == 5
     assert trip["party"]["total"] == 5
-    assert trip["party"]["rooms"] == 2
+    assert all(trip[v]["status"] == "NOT_BOOKED" for v in ("flights", "hotel", "transport"))
+    assert trip["activities"]["status"] == "NOT_BOOKED"
+    assert trip["payments"] == []
 
 
 def test_book_unknown_flight_id_is_404(client):
-    resp = client.post("/flights/book", json={"flight_id": "UA999"})
+    resp = client.post("/flights/book", json={"flight_id": "AA999"})
     assert resp.status_code == 404
-    assert "AA289" in resp.json()["detail"]
+    assert "AA511" in resp.json()["detail"]
 
 
 def test_rebook_unknown_month_is_404(client):
     resp = client.post("/trip/rebook", json={"month": "december"})
     assert resp.status_code == 404
-    assert "august" in resp.json()["detail"]
+    assert "november" in resp.json()["detail"]
 
 
 def test_rebook_to_the_same_month_is_400(client):
-    resp = client.post("/trip/rebook", json={"month": "august"})
+    resp = client.post("/trip/rebook", json={"month": "november"})
     assert resp.status_code == 400

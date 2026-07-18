@@ -68,6 +68,14 @@ PAYPAL_BASE_URL: str = os.getenv("PAYPAL_BASE_URL", "https://api-m.sandbox.paypa
 PAYPAL_CURRENCY: str = os.getenv("PAYPAL_CURRENCY", "USD")
 
 
+# --- Vocal Bridge (voice-token minting for the UI's /token route) ---
+# The VB API key must stay server-side; the UI calls our /token, we call VB.
+VOCAL_BRIDGE_API_KEY: str = os.getenv("VOCAL_BRIDGE_API_KEY", "")
+# Account-level VB keys require the agent id; default to the Maui "KiKi" agent.
+VB_AGENT_ID: str = os.getenv("VB_AGENT_ID", "98d6dd19-790c-40af-aeaf-28f53bc64ce4")
+VB_TOKEN_URL: str = os.getenv("VB_TOKEN_URL", "https://vocalbridgeai.com/api/v1/token")
+
+
 def mode() -> dict:
     """Self-describing status for /health, so each deployed URL says what it is."""
     any_live = SABRE_FLIGHTS_LIVE or SABRE_HOTELS_LIVE or PAYPAL_LIVE
