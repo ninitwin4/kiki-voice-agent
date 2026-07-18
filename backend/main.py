@@ -426,11 +426,21 @@ class FlightBookOut(BaseModel):
     totals: Totals
 
 
+class SabreHotel(BaseModel):
+    name: str
+    code: str | None = None
+    city: str | None = None
+
+
 class HotelBookOut(BaseModel):
     confirmed: bool
     message: str
     hotel: TripHotel
     totals: Totals
+    # Populated only by the real service (SABRE_HOTELS_LIVE) — genuine Maui
+    # properties from Sabre for the trip's dates. None on mock.
+    sabre_hotels: list[SabreHotel] | None = None
+    sabre_hotel_insight: str | None = None
 
 
 class TransportBookOut(BaseModel):
@@ -660,6 +670,21 @@ async def hotel_adjust() -> dict:
     TRIP["hotel"]["status"] = "BOOKED"
     TRIP["hotel"]["confirmation_number"] = TRIP["hotel"].get("confirmation_number") or _confirmation("HTL")
     hotel = TRIP["hotel"]
+
+    sabre_hotels = None
+    sabre_hotel_insight = None
+    if config.SABRE_HOTELS_LIVE:
+        found = sabre_client.hotel_search(
+            TRIP["destination"], hotel["check_in"], hotel["check_out"]
+        )
+        if found:
+            sabre_hotels = found
+            names = " and ".join(h["name"] for h in found[:2])
+            sabre_hotel_insight = (
+                f"Sabre is showing {len(found)} real Maui propert"
+                f"{'y' if len(found) == 1 else 'ies'} for these dates, including {names}."
+            )
+
     return {
         "confirmed": True,
         "message": (
@@ -669,6 +694,8 @@ async def hotel_adjust() -> dict:
         ),
         "hotel": hotel,
         "totals": _totals(TRIP),
+        "sabre_hotels": sabre_hotels,
+        "sabre_hotel_insight": sabre_hotel_insight,
     }
 
 

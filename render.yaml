@@ -38,14 +38,24 @@ services:
         value: "0"
       - key: SABRE_FLIGHTS_LIVE
         value: "true"
+      - key: SABRE_HOTELS_LIVE
+        value: "true"
       - key: PAYPAL_LIVE
         value: "true"
+      - key: SABRE_ACCESS_TOKEN
+        sync: false          # pre-issued hackathon token (carries PCC S5OM); expires — refresh as needed
       - key: SABRE_CLIENT_ID
         sync: false
       - key: SABRE_CLIENT_SECRET
         sync: false
       - key: SABRE_BASE_URL
         value: "https://api-crt.cert.havail.sabre.com"
+      - key: SABRE_SHOP_BASE_URL
+        value: "https://api.cert.platform.sabre.com"
+      - key: SABRE_MCP_URL
+        value: "https://mcp2.cert.sabre.com/mcp"
+      - key: SABRE_PCC
+        value: "S5OM"
       - key: PAYPAL_CLIENT_ID
         sync: false
       - key: PAYPAL_SECRET

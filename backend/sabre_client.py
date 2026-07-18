@@ -264,6 +264,15 @@ def search_flights(
     }
 
 
+def hotel_search(destination: str, check_in: str, check_out: str) -> list[dict]:
+    """Real Sabre hotels near the destination for the trip dates (via MCP-Skills).
+
+    Returns [{name, code, city}]; empty on any failure so /hotel/adjust never breaks.
+    """
+    from . import sabre_mcp
+    return sabre_mcp.search_hotels(destination, check_in, check_out)
+
+
 def book_flight(flight_id: str) -> dict:
     """TODO: book the selected itinerary for the group via Sabre, return the FlightBookOut shape."""
     raise NotImplementedError("Sabre booking is not integrated yet — set MOCK_MODE=true.")

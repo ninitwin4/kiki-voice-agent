@@ -32,8 +32,11 @@ PAYMENT_MOCK: bool = _bool_env("PAYMENT_MOCK", True)
 # are true, so nothing 501s.
 # --------------------------------------------------------------------------
 
-# When true, /flights/search calls real Sabre Bargain Finder Max.
+# When true, /flights/search calls real Sabre Flight Shop v1 (live itineraries).
 SABRE_FLIGHTS_LIVE: bool = _bool_env("SABRE_FLIGHTS_LIVE", False)
+
+# When true, /hotel/adjust attaches a real Sabre hotel insight (via MCP-Skills search-hotels).
+SABRE_HOTELS_LIVE: bool = _bool_env("SABRE_HOTELS_LIVE", False)
 
 # When true, the /payment/paypal/* endpoints are enabled (real sandbox PayPal).
 PAYPAL_LIVE: bool = _bool_env("PAYPAL_LIVE", False)
@@ -55,6 +58,8 @@ SABRE_SHOP_BASE_URL: str = os.getenv("SABRE_SHOP_BASE_URL", "https://api.cert.pl
 # Pseudo-city code — required in Flight Shop's processingOptions. The hackathon
 # token is provisioned for this PCC.
 SABRE_PCC: str = os.getenv("SABRE_PCC", "S5OM")
+# Sabre MCP-Skills endpoint (hotels are only reachable here, not via plain REST).
+SABRE_MCP_URL: str = os.getenv("SABRE_MCP_URL", "https://mcp2.cert.sabre.com/mcp").rstrip("/")
 
 # --- PayPal (sandbox) ---
 PAYPAL_CLIENT_ID: str = os.getenv("PAYPAL_CLIENT_ID", "")
@@ -65,8 +70,10 @@ PAYPAL_CURRENCY: str = os.getenv("PAYPAL_CURRENCY", "USD")
 
 def mode() -> dict:
     """Self-describing status for /health, so each deployed URL says what it is."""
+    any_live = SABRE_FLIGHTS_LIVE or SABRE_HOTELS_LIVE or PAYPAL_LIVE
     return {
-        "mode": "real" if (SABRE_FLIGHTS_LIVE or PAYPAL_LIVE) else "mock",
-        "sabre": "live" if SABRE_FLIGHTS_LIVE else "mock",
+        "mode": "real" if any_live else "mock",
+        "sabre_flights": "live" if SABRE_FLIGHTS_LIVE else "mock",
+        "sabre_hotels": "live" if SABRE_HOTELS_LIVE else "mock",
         "paypal": "live" if PAYPAL_LIVE else "mock",
     }

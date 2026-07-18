@@ -29,10 +29,11 @@ def _client(**env) -> TestClient:
 
 
 def test_health_reports_mode_flags():
-    c = _client(SABRE_FLIGHTS_LIVE="false", PAYPAL_LIVE="false")
+    c = _client(SABRE_FLIGHTS_LIVE="false", SABRE_HOTELS_LIVE="false", PAYPAL_LIVE="false")
     body = c.get("/health").json()
     assert body["mode"] == "mock"
-    assert body["sabre"] == "mock"
+    assert body["sabre_flights"] == "mock"
+    assert body["sabre_hotels"] == "mock"
     assert body["paypal"] == "mock"
 
 
@@ -55,6 +56,18 @@ def test_real_sabre_flight_search_maps_to_our_shape():
         assert o["price_pp"] > 0
         assert o["total_price"] > 0
         assert o["tradeoff"]
+
+
+@pytest.mark.skipif(not HAS_SABRE, reason="Sabre credentials not set")
+def test_real_sabre_hotel_insight():
+    c = _client(SABRE_HOTELS_LIVE="true")
+    c.post("/demo/reset")
+    body = c.post("/hotel/adjust").json()
+    # Mock hotel still books (narrative), plus real Sabre properties attached.
+    assert body["hotel"]["status"] == "BOOKED"
+    if body["sabre_hotels"]:  # CERT may occasionally return none for a date
+        assert body["sabre_hotel_insight"]
+        assert all(h["name"] for h in body["sabre_hotels"])
 
 
 @pytest.mark.skipif(not HAS_PAYPAL, reason="PayPal credentials not set")
