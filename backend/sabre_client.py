@@ -116,17 +116,87 @@ def _seasonality_insight(destination: str) -> str | None:
         return None
 
 
-def search_flights(
-    origin: str, destination: str, depart_date: str, return_date: str, travelers: int
-) -> dict:
-    """Real Sabre fare check for the route, mapped into FlightSearchOut.
+TIERS = ["A", "B", "C"]
 
-    Sabre CERT can't return full itineraries for this account (InstaFlights cache
-    is empty, BFM isn't provisioned), but the "cheapest fares to a destination"
-    API returns real airlines + prices. We map those into our option shape and
-    attach a live Travel Seasonality insight. A Sabre 404 means "no fares found"
-    (not a missing endpoint), so we degrade to an empty option list, not an error.
+
+def _hhmm(t: str) -> str:
+    return (t or "")[:5]
+
+
+def _flightshop_options(origin, destination, depart_date, return_date, travelers) -> list[dict]:
+    """Real Sabre Flight Shop v1 → full round-trip itineraries mapped to options.
+
+    The response splits data across flights[]/journeys[]/offers[] cross-referenced
+    by id: an offer references journeys, a journey references flight segments. We
+    resolve those, take the three cheapest offers, and shape each into a FlightOption.
     """
+    token = _get_token()
+    body = {
+        "journeys": [
+            {"departureLocation": {"airportCode": origin},
+             "arrivalLocation": {"airportCode": destination}, "departureDate": depart_date},
+            {"departureLocation": {"airportCode": destination},
+             "arrivalLocation": {"airportCode": origin}, "departureDate": return_date},
+        ],
+        "travelers": [{"passengerTypeCode": "ADT"} for _ in range(max(travelers, 1))],
+        "processingOptions": {"pseudoCityCode": config.SABRE_PCC, "limitNumberOfOffers": 20},
+    }
+    resp = httpx.post(
+        f"{config.SABRE_SHOP_BASE_URL}/v1/offers/flightShop",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json=body, timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    flights = {f["id"]: f for f in data.get("flights", [])}
+    journeys = {j["id"]: j for j in data.get("journeys", [])}
+    offers = sorted(
+        data.get("offers", []),
+        key=lambda o: float(o.get("totalPrice", {}).get("amount", 1e9) or 1e9),
+    )
+
+    def segs(journey_id):
+        j = journeys.get(journey_id, {})
+        return [flights[r] for r in j.get("flightRefs", []) if r in flights]
+
+    options = []
+    for i, offer in enumerate(offers[:3]):
+        jrefs = offer.get("journeyRefs", [])
+        out = segs(jrefs[0]) if jrefs else []
+        ret = segs(jrefs[1]) if len(jrefs) > 1 else []
+        if not out:
+            continue
+        total = round(float(offer.get("totalPrice", {}).get("amount", 0) or 0), 2)
+        pp = round(total / travelers, 2) if travelers else total
+        code = out[0].get("marketingAirlineCode", "")
+        carrier = _CARRIERS.get(code, code)
+        stops = len(out) - 1
+        conn = "Nonstop" if stops == 0 else (f"{stops}-stop")
+        options.append({
+            "flight_id": f"{code}{out[0].get('marketingFlightNumber','')}-{i}",
+            "tier": TIERS[i],
+            "carrier": carrier,
+            "flight_no": f"{code} {out[0].get('marketingFlightNumber','')}".strip(),
+            "depart_time": _hhmm(out[0].get("departureTime")),
+            "arrive_time": _hhmm(out[-1].get("arrivalTime")),
+            "stops": stops,
+            "price_pp": pp,
+            "total_price": total,
+            "recommended": i == 0,
+            "return_flight_no": (f"{ret[0].get('marketingAirlineCode','')} "
+                                 f"{ret[0].get('marketingFlightNumber','')}").strip() if ret else "",
+            "return_depart_time": _hhmm(ret[0].get("departureTime")) if ret else "",
+            "return_arrive_time": _hhmm(ret[-1].get("arrivalTime")) if ret else "",
+            "tradeoff": (
+                f"{conn} on {carrier}, about ${pp:.0f} per person"
+                + (" — cheapest of the three." if i == 0 else ".")
+            ),
+        })
+    return options
+
+
+def _cheapest_fares_options(origin, destination, travelers) -> list[dict]:
+    """Fallback: Sabre cheapest-fares-to-destination (real airlines + prices, no times)."""
     token = _get_token()
     resp = httpx.get(
         f"{config.SABRE_BASE_URL}/v1/shop/flights/cheapest/fares/{destination}",
@@ -134,14 +204,11 @@ def search_flights(
         params={"origin": origin, "pointofsalecountry": "US"},
         timeout=30,
     )
-    if resp.status_code == 404:  # Sabre 404 = "no fares found", not a missing endpoint
-        fares = []
-    else:
-        resp.raise_for_status()
-        fares = resp.json().get("FareInfo", [])
-    fares = sorted(fares, key=lambda f: f.get("LowestFare", {}).get("Fare", 1e9))[:3]
-
-    tiers = ["A", "B", "C"]
+    if resp.status_code == 404:
+        return []
+    resp.raise_for_status()
+    fares = sorted(resp.json().get("FareInfo", []),
+                   key=lambda f: f.get("LowestFare", {}).get("Fare", 1e9))[:3]
     options = []
     for i, f in enumerate(fares):
         low = f.get("LowestFare", {})
@@ -149,26 +216,38 @@ def search_flights(
         codes = low.get("AirlineCodes") or []
         code = codes[0] if codes else "SB"
         carrier = _CARRIERS.get(code, code)
-        from_loc = f.get("OriginLocation", origin)
         options.append({
-            "flight_id": f"{code}{i}",
-            "tier": tiers[i],
-            "carrier": carrier,
-            "flight_no": "",  # cheapest-fares gives fares + airline, not flight numbers
-            "depart_time": "",
-            "arrive_time": "",
-            "stops": 0,
-            "price_pp": fare,
-            "total_price": round(fare * travelers, 2),
-            "recommended": i == 0,
-            "return_flight_no": "",
-            "return_depart_time": "",
-            "return_arrive_time": "",
-            "tradeoff": (
-                f"Live Sabre fare: {carrier} into {destination} from {from_loc}, "
-                f"about ${fare:.0f} per person."
-            ),
+            "flight_id": f"{code}{i}", "tier": TIERS[i], "carrier": carrier, "flight_no": "",
+            "depart_time": "", "arrive_time": "", "stops": 0,
+            "price_pp": fare, "total_price": round(fare * travelers, 2), "recommended": i == 0,
+            "return_flight_no": "", "return_depart_time": "", "return_arrive_time": "",
+            "tradeoff": f"Live Sabre fare: {carrier} into {destination} from "
+                        f"{f.get('OriginLocation', origin)}, about ${fare:.0f} per person.",
         })
+    return options
+
+
+def search_flights(
+    origin: str, destination: str, depart_date: str, return_date: str, travelers: int
+) -> dict:
+    """Real Sabre flight search mapped into FlightSearchOut.
+
+    Primary: Flight Shop v1 (full round-trip itineraries, priced for PCC S5OM).
+    Fallback: cheapest-fares-to-destination if Flight Shop returns nothing or
+    errors — so a live Sabre demo always shows real data, never a 500. A live
+    Travel Seasonality insight is attached either way.
+    """
+    source = "Sabre Flight Shop v1 (live)"
+    try:
+        options = _flightshop_options(origin, destination, depart_date, return_date, travelers)
+    except Exception:
+        options = []
+    if not options:
+        source = "Sabre cheapest-fares (live)"
+        try:
+            options = _cheapest_fares_options(origin, destination, travelers)
+        except Exception:
+            options = []
 
     return {
         "request": {
@@ -178,7 +257,7 @@ def search_flights(
             "dates": f"{depart_date} → {return_date}",
             "travelers": travelers,
             "season": "",
-            "source": "Sabre cheapest-fares (live)",
+            "source": source,
             "sabre_insight": _seasonality_insight(destination),
         },
         "options": options,

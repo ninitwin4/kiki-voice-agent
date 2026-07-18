@@ -47,7 +47,14 @@ PAYPAL_LIVE: bool = _bool_env("PAYPAL_LIVE", False)
 SABRE_ACCESS_TOKEN: str = os.getenv("SABRE_ACCESS_TOKEN", "").strip()
 SABRE_CLIENT_ID: str = os.getenv("SABRE_CLIENT_ID", "")
 SABRE_CLIENT_SECRET: str = os.getenv("SABRE_CLIENT_SECRET", "")
+# Two hosts: the "havail" host serves the fare/seasonality REST APIs; the
+# "platform" host serves Flight Shop v1 (real itineraries). Both accept the
+# same token.
 SABRE_BASE_URL: str = os.getenv("SABRE_BASE_URL", "https://api-crt.cert.havail.sabre.com").rstrip("/")
+SABRE_SHOP_BASE_URL: str = os.getenv("SABRE_SHOP_BASE_URL", "https://api.cert.platform.sabre.com").rstrip("/")
+# Pseudo-city code — required in Flight Shop's processingOptions. The hackathon
+# token is provisioned for this PCC.
+SABRE_PCC: str = os.getenv("SABRE_PCC", "S5OM")
 
 # --- PayPal (sandbox) ---
 PAYPAL_CLIENT_ID: str = os.getenv("PAYPAL_CLIENT_ID", "")
