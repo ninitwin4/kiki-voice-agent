@@ -1,0 +1,12 @@
+{
+  "captured_at_utc": "2026-07-30T02:59:31+00:00",
+  "note": "Live Vocal Bridge session-token mint via POST /api/v1/token (our backend's POST /token proxies this; API key server-side). Token + subdomain redacted; shape and expiry are real.",
+  "response": {
+    "livekit_url": "wss://<subdomain>.livekit.cloud",
+    "token": "<REDACTED 424-char LiveKit JWT>",
+    "room_name": "user-37178ac0-agent-98d6dd19-api-adb93a7e",
+    "participant_identity": "api-client-MbbK-adb93a7e",
+    "expires_in": 3600,
+    "agent_mode": "openai_concierge"
+  }
+}

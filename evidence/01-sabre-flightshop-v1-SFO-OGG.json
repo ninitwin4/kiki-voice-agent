@@ -1,0 +1,1471 @@
+{
+  "captured_at_utc": "2026-07-30T03:05:26+00:00",
+  "note": "LIVE Sabre Flight Shop v1 (POST api.cert.platform.sabre.com/v1/offers/flightShop), PCC S5OM. Real round-trip itineraries SFO<->OGG, 5 adults, Aug 5-10 2026.",
+  "response": {
+    "timestamp": "2026-07-30T03:05:28.359Z",
+    "flights": [
+      {
+        "id": "c8e77920-c060-43ae-92c9-10029dfa12d1",
+        "departureAirportCode": "SFO",
+        "departureDate": "2026-08-05",
+        "departureTime": "06:00",
+        "arrivalAirportCode": "LAX",
+        "arrivalDate": "2026-08-05",
+        "arrivalTime": "07:35",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1620,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1620,
+        "aircraftTypeCode": "73J",
+        "durationInMinutes": 95,
+        "departureTerminal": "1",
+        "arrivalTerminal": "6"
+      },
+      {
+        "id": "5cf9848f-fc28-49ca-803f-5dcf18d845b6",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "09:48",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "10:30",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1055,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1055,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 42,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "3c9c9edb-7653-41ae-bbc6-2235ec10e231",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "10:55",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "11:37",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1075,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1075,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 42,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "2da71388-a7ef-4e61-a308-4dd1f405e389",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "09:11",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "09:53",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1045,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1045,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 42,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "64c30b94-36c6-4acc-9212-f43cdd30b628",
+        "departureAirportCode": "HNL",
+        "departureDate": "2026-08-10",
+        "departureTime": "12:15",
+        "arrivalAirportCode": "SFO",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "20:25",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 812,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 812,
+        "aircraftTypeCode": "332",
+        "durationInMinutes": 310,
+        "departureTerminal": "1",
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "e7dff030-5a68-4e5c-bbea-bed665e8ee48",
+        "departureAirportCode": "HNL",
+        "departureDate": "2026-08-10",
+        "departureTime": "21:52",
+        "arrivalAirportCode": "SFO",
+        "arrivalDate": "2026-08-11",
+        "arrivalTime": "06:00",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 838,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 838,
+        "aircraftTypeCode": "321",
+        "durationInMinutes": 308,
+        "departureTerminal": "1",
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "3f9087fd-43fd-471c-b88d-3e89aa1bdb32",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "10:20",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "11:02",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1065,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1065,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 42,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+        "departureAirportCode": "SFO",
+        "departureDate": "2026-08-05",
+        "departureTime": "07:35",
+        "arrivalAirportCode": "OGG",
+        "arrivalDate": "2026-08-05",
+        "arrivalTime": "09:54",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 979,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 979,
+        "aircraftTypeCode": "321",
+        "durationInMinutes": 319,
+        "departureTerminal": "1"
+      },
+      {
+        "id": "8f4b9257-bccb-488c-8912-5ee1de71b549",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "14:35",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "15:19",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1125,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1125,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 44,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "be9d18e8-1309-4c38-a8dc-4de05ae5438e",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "19:48",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "20:28",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1185,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1185,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 40,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "283bdb42-5a1f-4681-8c2e-b629676e9d17",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "10:32",
+        "arrivalAirportCode": "SFO",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "18:27",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 978,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 978,
+        "aircraftTypeCode": "321",
+        "durationInMinutes": 295,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "eeeea21d-41cf-4a11-b95e-43b3e9b51b5b",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "19:00",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "19:40",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1175,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1175,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 40,
+        "arrivalTerminal": "1"
+      },
+      {
+        "id": "5e20079d-b522-4943-bbb2-8b7ff4b9121f",
+        "departureAirportCode": "LAX",
+        "departureDate": "2026-08-05",
+        "departureTime": "09:00",
+        "arrivalAirportCode": "OGG",
+        "arrivalDate": "2026-08-05",
+        "arrivalTime": "11:50",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 933,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 933,
+        "aircraftTypeCode": "332",
+        "durationInMinutes": 350,
+        "departureTerminal": "6"
+      },
+      {
+        "id": "d1ec0117-5ab5-404c-96fb-b391643aa0cf",
+        "departureAirportCode": "OGG",
+        "departureDate": "2026-08-10",
+        "departureTime": "20:14",
+        "arrivalAirportCode": "HNL",
+        "arrivalDate": "2026-08-10",
+        "arrivalTime": "20:53",
+        "operatingAirlineCode": "AS",
+        "operatingFlightNumber": 1195,
+        "marketingAirlineCode": "AS",
+        "marketingFlightNumber": 1195,
+        "aircraftTypeCode": "717",
+        "durationInMinutes": 39,
+        "arrivalTerminal": "1"
+      }
+    ],
+    "journeys": [
+      {
+        "id": "ee78f5d8-7c0b-45ef-b297-65d5580570bc",
+        "flightRefs": [
+          "283bdb42-5a1f-4681-8c2e-b629676e9d17"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "d82a36b7-f36c-49c1-9b9e-89bb7fbdb9dc",
+        "flightRefs": [
+          "2da71388-a7ef-4e61-a308-4dd1f405e389",
+          "64c30b94-36c6-4acc-9212-f43cdd30b628"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "4f8c198c-7a5c-483f-b833-4cdb14669391",
+        "flightRefs": [
+          "f24fb649-789f-4be2-a060-f9f2d421c3c0"
+        ],
+        "requestedJourneyIndex": 0
+      },
+      {
+        "id": "1cfe07e7-0bbb-4fc3-9678-e7e928c08cf2",
+        "flightRefs": [
+          "3c9c9edb-7653-41ae-bbc6-2235ec10e231",
+          "64c30b94-36c6-4acc-9212-f43cdd30b628"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "8bfc97c2-6aee-4eac-ab81-49a27d1682af",
+        "flightRefs": [
+          "5cf9848f-fc28-49ca-803f-5dcf18d845b6",
+          "64c30b94-36c6-4acc-9212-f43cdd30b628"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "8bf1e7e3-d4e1-411f-a352-c87e8c6eebeb",
+        "flightRefs": [
+          "d1ec0117-5ab5-404c-96fb-b391643aa0cf",
+          "e7dff030-5a68-4e5c-bbea-bed665e8ee48"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "594fec11-71d0-4e2f-9348-1b856d7ebf3a",
+        "flightRefs": [
+          "eeeea21d-41cf-4a11-b95e-43b3e9b51b5b",
+          "e7dff030-5a68-4e5c-bbea-bed665e8ee48"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "5a105b59-3e6a-40de-92c7-e309f2c40c56",
+        "flightRefs": [
+          "be9d18e8-1309-4c38-a8dc-4de05ae5438e",
+          "e7dff030-5a68-4e5c-bbea-bed665e8ee48"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "1261b2b3-e603-4a94-a521-e8481808f5e0",
+        "flightRefs": [
+          "8f4b9257-bccb-488c-8912-5ee1de71b549",
+          "e7dff030-5a68-4e5c-bbea-bed665e8ee48"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "2ab844f5-d80b-4af6-8874-f84bb9b43011",
+        "flightRefs": [
+          "3f9087fd-43fd-471c-b88d-3e89aa1bdb32",
+          "64c30b94-36c6-4acc-9212-f43cdd30b628"
+        ],
+        "requestedJourneyIndex": 1
+      },
+      {
+        "id": "d692a7fd-2b39-4c42-a9a7-ae236f744f6e",
+        "flightRefs": [
+          "c8e77920-c060-43ae-92c9-10029dfa12d1",
+          "5e20079d-b522-4943-bbb2-8b7ff4b9121f"
+        ],
+        "requestedJourneyIndex": 0
+      }
+    ],
+    "offers": [
+      {
+        "type": "FlightOffer",
+        "id": "1ff504f4-d180-445b-8d9b-14a4c4366fa6",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3371.00",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "ee78f5d8-7c0b-45ef-b297-65d5580570bc"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "54.44",
+                  "amount": "674.20",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "283bdb42-5a1f-4681-8c2e-b629676e9d17",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "a693feb9-14ea-44a8-9453-98e3cc3bcac6",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "d61b38b4-8740-48e2-a7ec-68f0638f6576",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3397.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "8bf1e7e3-d4e1-411f-a352-c87e8c6eebeb"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "59.74",
+                  "amount": "679.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "QH0OAJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "d1ec0117-5ab5-404c-96fb-b391643aa0cf",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "e7dff030-5a68-4e5c-bbea-bed665e8ee48",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "a3dbf162-77b2-46c8-924c-e84ebc145d1e",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "8ed383b7-2257-461a-82c5-766c375a9464",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3397.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "5a105b59-3e6a-40de-92c7-e309f2c40c56"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "59.74",
+                  "amount": "679.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "QH0OAJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "be9d18e8-1309-4c38-a8dc-4de05ae5438e",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "e7dff030-5a68-4e5c-bbea-bed665e8ee48",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "0de89699-6388-4ac3-b16f-eac1d38b4561",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "fdb547d8-7642-44b8-87a3-168ebdc6d179",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3397.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "594fec11-71d0-4e2f-9348-1b856d7ebf3a"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "59.74",
+                  "amount": "679.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "QH0OAJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "eeeea21d-41cf-4a11-b95e-43b3e9b51b5b",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "e7dff030-5a68-4e5c-bbea-bed665e8ee48",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "bc7b775a-299d-431c-99f0-7c6ed8d268bc",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "a74a415a-7602-4859-858e-f303cd556739",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3397.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "1261b2b3-e603-4a94-a521-e8481808f5e0"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "59.74",
+                  "amount": "679.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "QH0OAJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "8f4b9257-bccb-488c-8912-5ee1de71b549",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "e7dff030-5a68-4e5c-bbea-bed665e8ee48",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "12ce45f6-2f2e-4f83-a025-882b8bfecf10",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "f4963950-eac9-4a16-b80c-b3b32e662a55",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3420.00",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "d692a7fd-2b39-4c42-a9a7-ae236f744f6e",
+          "ee78f5d8-7c0b-45ef-b297-65d5580570bc"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "619.76",
+                  "taxAmount": "64.24",
+                  "amount": "684.00",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "QH0OAJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "c8e77920-c060-43ae-92c9-10029dfa12d1",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "5e20079d-b522-4943-bbb2-8b7ff4b9121f",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "283bdb42-5a1f-4681-8c2e-b629676e9d17",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "6f0d724a-d1ff-4d09-b449-5484fa44140d",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "ef2865e6-e218-4bae-b9f3-4ec25e39d197",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3427.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "1cfe07e7-0bbb-4fc3-9678-e7e928c08cf2"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "625.75",
+                  "taxAmount": "59.75",
+                  "amount": "685.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "315.87",
+                    "currencyCode": "USD",
+                    "publishedAmount": "315.87",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "NH0OCJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "3c9c9edb-7653-41ae-bbc6-2235ec10e231",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "64c30b94-36c6-4acc-9212-f43cdd30b628",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "f0122982-affd-40cf-afcd-6550a051cafb",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "6595e2b7-1d10-42c9-932f-9c815d0840a4",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3427.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "2ab844f5-d80b-4af6-8874-f84bb9b43011"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "625.75",
+                  "taxAmount": "59.75",
+                  "amount": "685.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "315.87",
+                    "currencyCode": "USD",
+                    "publishedAmount": "315.87",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "NH0OCJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "3f9087fd-43fd-471c-b88d-3e89aa1bdb32",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "64c30b94-36c6-4acc-9212-f43cdd30b628",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "46b39ed9-1874-4018-a58b-a3c90f88a256",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "f655a179-03b6-4321-9406-6ec2b43e1418",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3427.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "8bfc97c2-6aee-4eac-ab81-49a27d1682af"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "625.75",
+                  "taxAmount": "59.75",
+                  "amount": "685.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "315.87",
+                    "currencyCode": "USD",
+                    "publishedAmount": "315.87",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "NH0OCJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "5cf9848f-fc28-49ca-803f-5dcf18d845b6",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "64c30b94-36c6-4acc-9212-f43cdd30b628",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "7e7461d9-647d-4cc6-ac60-a802e8cb8c2b",
+            "isMandatory": true
+          }
+        ]
+      },
+      {
+        "type": "FlightOffer",
+        "id": "369c088b-7d3f-446a-a5a4-03f8f7db79c4",
+        "createdAt": "2026-07-30T03:05:28Z",
+        "validUntil": "2026-07-30T03:25:28Z",
+        "source": {
+          "provider": "Sabre",
+          "distributionModel": "ATPCO"
+        },
+        "totalPrice": {
+          "amount": "3427.50",
+          "currencyCode": "USD"
+        },
+        "paymentTimeLimit": "2026-07-29T22:35:00Z",
+        "applicableToPseudoCityCodes": [
+          "S5OM"
+        ],
+        "journeyRefs": [
+          "4f8c198c-7a5c-483f-b833-4cdb14669391",
+          "d82a36b7-f36c-49c1-9b9e-89bb7fbdb9dc"
+        ],
+        "items": [
+          {
+            "type": "FlightOfferItem",
+            "fares": [
+              {
+                "travelers": [
+                  {
+                    "id": "Passenger1",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 0
+                  },
+                  {
+                    "id": "Passenger2",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 1
+                  },
+                  {
+                    "id": "Passenger3",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 2
+                  },
+                  {
+                    "id": "Passenger4",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 3
+                  },
+                  {
+                    "id": "Passenger5",
+                    "passengerTypeCode": "ADT",
+                    "requestedTravelerIndex": 4
+                  }
+                ],
+                "fareTotal": {
+                  "equivalentFare": "625.75",
+                  "taxAmount": "59.75",
+                  "amount": "685.50",
+                  "currencyCode": "USD"
+                },
+                "validatingAirlineCode": "AS",
+                "fareComponents": [
+                  {
+                    "amount": "309.88",
+                    "currencyCode": "USD",
+                    "publishedAmount": "309.88",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "SH0OAVBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "f24fb649-789f-4be2-a060-f9f2d421c3c0",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  },
+                  {
+                    "amount": "315.87",
+                    "currencyCode": "USD",
+                    "publishedAmount": "315.87",
+                    "publishedCurrencyCode": "USD",
+                    "exchangeRate": "1.00000",
+                    "fareBasisCode": "NH0OCJBN",
+                    "segmentDetails": [
+                      {
+                        "flightRef": "2da71388-a7ef-4e61-a308-4dd1f405e389",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      },
+                      {
+                        "flightRef": "64c30b94-36c6-4acc-9212-f43cdd30b628",
+                        "bookingClassCode": "X",
+                        "cabinName": "Economy"
+                      }
+                    ],
+                    "brand": {
+                      "code": "SV",
+                      "name": "SAVER",
+                      "programId": 247499
+                    }
+                  }
+                ]
+              }
+            ],
+            "isPartial": false,
+            "id": "72f2f44e-58b2-466f-83d4-9960481ece33",
+            "isMandatory": true
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,390 @@
+{
+  "captured_at_utc": "2026-07-30T03:05:26+00:00",
+  "note": "LIVE Sabre Travel Seasonality for OGG (Maui) \u2014 weekly Low/Medium/High demand ratings; used to compare November vs August.",
+  "response": {
+    "DestinationLocation": "OGG",
+    "Seasonality": [
+      {
+        "WeekEndDate": "2025-01-05T00:00:00",
+        "YearWeekNumber": 1,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-12-30T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-01-12T00:00:00",
+        "YearWeekNumber": 2,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-01-06T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-01-19T00:00:00",
+        "YearWeekNumber": 3,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-01-13T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-01-26T00:00:00",
+        "YearWeekNumber": 4,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-01-20T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-02-02T00:00:00",
+        "YearWeekNumber": 5,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-01-27T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-02-09T00:00:00",
+        "YearWeekNumber": 6,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-02-03T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-02-16T00:00:00",
+        "YearWeekNumber": 7,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-02-10T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-02-23T00:00:00",
+        "YearWeekNumber": 8,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-02-17T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-03-02T00:00:00",
+        "YearWeekNumber": 9,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-02-24T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-03-09T00:00:00",
+        "YearWeekNumber": 10,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-03-03T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-03-16T00:00:00",
+        "YearWeekNumber": 11,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-03-10T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-03-23T00:00:00",
+        "YearWeekNumber": 12,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-03-17T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-03-30T00:00:00",
+        "YearWeekNumber": 13,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-03-24T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-04-06T00:00:00",
+        "YearWeekNumber": 14,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-03-31T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-04-13T00:00:00",
+        "YearWeekNumber": 15,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-04-07T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-04-20T00:00:00",
+        "YearWeekNumber": 16,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-04-14T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-04-27T00:00:00",
+        "YearWeekNumber": 17,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-04-21T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-05-04T00:00:00",
+        "YearWeekNumber": 18,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-04-28T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-05-11T00:00:00",
+        "YearWeekNumber": 19,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-05-05T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2025-05-18T00:00:00",
+        "YearWeekNumber": 20,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-05-12T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2025-05-25T00:00:00",
+        "YearWeekNumber": 21,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2025-05-19T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-06-02T00:00:00",
+        "YearWeekNumber": 22,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-05-27T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-06-09T00:00:00",
+        "YearWeekNumber": 23,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-06-03T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-06-16T00:00:00",
+        "YearWeekNumber": 24,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-06-10T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-06-23T00:00:00",
+        "YearWeekNumber": 25,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-06-17T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-06-30T00:00:00",
+        "YearWeekNumber": 26,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-06-24T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-07-07T00:00:00",
+        "YearWeekNumber": 27,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-07-01T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-07-14T00:00:00",
+        "YearWeekNumber": 28,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-07-08T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-07-21T00:00:00",
+        "YearWeekNumber": 29,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-07-15T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-07-28T00:00:00",
+        "YearWeekNumber": 30,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-07-22T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-08-04T00:00:00",
+        "YearWeekNumber": 31,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-07-29T00:00:00",
+        "SeasonalityIndicator": "High"
+      },
+      {
+        "WeekEndDate": "2024-08-11T00:00:00",
+        "YearWeekNumber": 32,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-08-05T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-08-18T00:00:00",
+        "YearWeekNumber": 33,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-08-12T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-08-25T00:00:00",
+        "YearWeekNumber": 34,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-08-19T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-09-01T00:00:00",
+        "YearWeekNumber": 35,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-08-26T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-09-08T00:00:00",
+        "YearWeekNumber": 36,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-09-02T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-09-15T00:00:00",
+        "YearWeekNumber": 37,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-09-09T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-09-22T00:00:00",
+        "YearWeekNumber": 38,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-09-16T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-09-29T00:00:00",
+        "YearWeekNumber": 39,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-09-23T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-10-06T00:00:00",
+        "YearWeekNumber": 40,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-09-30T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-10-13T00:00:00",
+        "YearWeekNumber": 41,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-10-07T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-10-27T00:00:00",
+        "YearWeekNumber": 43,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-10-21T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-11-03T00:00:00",
+        "YearWeekNumber": 44,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-10-28T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-11-10T00:00:00",
+        "YearWeekNumber": 45,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-11-04T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-11-17T00:00:00",
+        "YearWeekNumber": 46,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-11-11T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-11-24T00:00:00",
+        "YearWeekNumber": 47,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-11-18T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-12-01T00:00:00",
+        "YearWeekNumber": 48,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-11-25T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-12-08T00:00:00",
+        "YearWeekNumber": 49,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-12-02T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-12-15T00:00:00",
+        "YearWeekNumber": 50,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-12-09T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-12-22T00:00:00",
+        "YearWeekNumber": 51,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-12-16T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2024-12-29T00:00:00",
+        "YearWeekNumber": 52,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-12-23T00:00:00",
+        "SeasonalityIndicator": "Low"
+      },
+      {
+        "WeekEndDate": "2024-10-20T00:00:00",
+        "YearWeekNumber": 42,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2024-10-14T00:00:00",
+        "SeasonalityIndicator": "Medium"
+      },
+      {
+        "WeekEndDate": "2022-01-02T00:00:00",
+        "YearWeekNumber": 0,
+        "NumberOfObservations": "GreaterThan10000",
+        "WeekStartDate": "2022-01-01T00:00:00",
+        "SeasonalityIndicator": "Low"
+      }
+    ],
+    "Links": [
+      {
+        "rel": "self",
+        "href": "https://api-crt.cert.havail.sabre.com/v1/historical/flights/OGG/seasonality"
+      },
+      {
+        "rel": "linkTemplate",
+        "href": "https://api-crt.cert.havail.sabre.com/v1/historical/flights/<destination>/seasonality"
+      }
+    ]
+  }
+}

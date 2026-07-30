@@ -1,0 +1,41 @@
+{
+  "captured_at_utc": "2026-07-30T03:08:02+00:00",
+  "note": "Our POST /hotel/adjust: mock booking for the narrative PLUS real Sabre Maui properties (sabre_hotels) from MCP-Skills.",
+  "response": {
+    "confirmed": true,
+    "message": "Booked 2 Ocean-view double queen rooms at The Westin Maui Resort & Spa, Ka'anapali, 2026-11-02 to 2026-11-07 (5 nights) \u2014 480.00 per room per night, 4800.00 USD total.",
+    "hotel": {
+      "status": "BOOKED",
+      "name": "The Westin Maui Resort & Spa, Ka'anapali",
+      "room_type": "Ocean-view double queen",
+      "rooms": 2,
+      "check_in": "2026-11-02",
+      "check_out": "2026-11-07",
+      "nightly_rate": 480.0,
+      "nights": 5,
+      "total": 4800.0,
+      "note": "Off-season rates \u2014 but early November is Maui's rainy season, so plan for showers.",
+      "confirmation_number": "HTL-7D4A97"
+    },
+    "totals": {
+      "currency": "USD",
+      "flights": 2980.0,
+      "hotel": 4800.0,
+      "transport": 400.0,
+      "activities": 990.0,
+      "trip_total": 9170.0,
+      "budget": 12000.0,
+      "over_budget_by": 0.0,
+      "within_budget": true,
+      "flights_quoted": true
+    },
+    "sabre_hotels": [
+      {
+        "name": "Wailea Beach Resort - Marriott Maui",
+        "code": "100013062",
+        "city": "Wailea"
+      }
+    ],
+    "sabre_hotel_insight": "Sabre is showing 1 real Maui property for these dates, including Wailea Beach Resort - Marriott Maui."
+  }
+}

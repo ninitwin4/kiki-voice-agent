@@ -1,0 +1,117 @@
+{
+  "captured_at_utc": "2026-07-30T03:08:02+00:00",
+  "note": "Our POST /flights/search in hybrid mode: curated bookable options PLUS live Sabre fares (sabre_live_fares) and real Travel Seasonality (sabre_insight).",
+  "response": {
+    "request": {
+      "origin": "SFO",
+      "destination": "OGG",
+      "month": "november",
+      "dates": "2026-11-02 \u2192 2026-11-07",
+      "travelers": 5,
+      "season": "rainy",
+      "source": "BargainFinderMax (mock)",
+      "sabre_insight": "Live Sabre demand data rates the first week of November as Low and early August as Medium for OGG.",
+      "sabre_source": "Sabre Flight Shop v1 (live)"
+    },
+    "options": [
+      {
+        "flight_id": "AA511",
+        "tier": "A",
+        "carrier": "American Airlines",
+        "flight_no": "AA 511",
+        "depart_time": "08:20",
+        "arrive_time": "10:55",
+        "stops": 0,
+        "price_pp": 596.0,
+        "total_price": 2980.0,
+        "recommended": true,
+        "return_flight_no": "AA 512",
+        "return_depart_time": "14:30",
+        "return_arrive_time": "22:10",
+        "tradeoff": "Nonstop both ways with an afternoon flight home \u2014 easiest with a kid, and off-season pricing at $596 per person."
+      },
+      {
+        "flight_id": "AA1620",
+        "tier": "B",
+        "carrier": "American Airlines",
+        "flight_no": "AA 1620",
+        "depart_time": "06:55",
+        "arrive_time": "12:30",
+        "stops": 1,
+        "price_pp": 512.0,
+        "total_price": 2560.0,
+        "recommended": false,
+        "return_flight_no": "AA 1621",
+        "return_depart_time": "13:15",
+        "return_arrive_time": "22:45",
+        "tradeoff": "Cheapest of the three, but a Los Angeles connection adds about two hours each way with a tired kid."
+      },
+      {
+        "flight_id": "AA742",
+        "tier": "C",
+        "carrier": "American Airlines",
+        "flight_no": "AA 742",
+        "depart_time": "09:45",
+        "arrive_time": "12:20",
+        "stops": 0,
+        "price_pp": 571.0,
+        "total_price": 2855.0,
+        "recommended": false,
+        "return_flight_no": "AA 743",
+        "return_depart_time": "06:05",
+        "return_arrive_time": "13:45",
+        "tradeoff": "Nonstop and a little cheaper, but the return leaves OGG at 6:05 AM \u2014 a 4 AM wake-up for all five, including the child."
+      }
+    ],
+    "sabre_live_fares": [
+      {
+        "flight_id": "AS943-0",
+        "tier": "A",
+        "carrier": "Alaska",
+        "flight_no": "AS 943",
+        "depart_time": "07:10",
+        "arrive_time": "10:35",
+        "stops": 0,
+        "price_pp": 342.2,
+        "total_price": 1711.0,
+        "recommended": true,
+        "return_flight_no": "AS 942",
+        "return_depart_time": "11:35",
+        "return_arrive_time": "18:40",
+        "tradeoff": "Nonstop on Alaska, about $342 per person \u2014 cheapest of the three."
+      },
+      {
+        "flight_id": "AS861-1",
+        "tier": "B",
+        "carrier": "Alaska",
+        "flight_no": "AS 861",
+        "depart_time": "19:55",
+        "arrive_time": "06:17",
+        "stops": 1,
+        "price_pp": 379.5,
+        "total_price": 1897.5,
+        "recommended": false,
+        "return_flight_no": "AS 942",
+        "return_depart_time": "11:35",
+        "return_arrive_time": "18:40",
+        "tradeoff": "1-stop on Alaska, about $380 per person."
+      },
+      {
+        "flight_id": "AS861-2",
+        "tier": "C",
+        "carrier": "Alaska",
+        "flight_no": "AS 861",
+        "depart_time": "19:55",
+        "arrive_time": "08:01",
+        "stops": 1,
+        "price_pp": 379.5,
+        "total_price": 1897.5,
+        "recommended": false,
+        "return_flight_no": "AS 942",
+        "return_depart_time": "11:35",
+        "return_arrive_time": "18:40",
+        "tradeoff": "1-stop on Alaska, about $380 per person."
+      }
+    ]
+  }
+}

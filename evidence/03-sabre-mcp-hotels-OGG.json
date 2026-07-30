@@ -1,0 +1,443 @@
+{
+  "captured_at_utc": "2026-07-30T03:05:26+00:00",
+  "note": "LIVE Sabre hotel search via MCP-Skills (mcp2.cert.sabre.com/mcp, tools/call search-hotels), PCC S5OM. Real Maui properties for Aug 5-10 2026.",
+  "response": {
+    "timestamp": "2026-07-30T03:05:31.011022682Z",
+    "hotels": [
+      {
+        "hotel": {
+          "hotelCode": "100013062",
+          "hotelName": "Wailea Beach Resort - Marriott Maui",
+          "logo": "http://vcmp-hotels.cert.sabre.com/image/upload/f_auto,q_auto:best,t_vcmp_logo/v1547499829/hotel/l/mc/MC.png",
+          "latitude": 20.688061,
+          "longitude": -156.439613,
+          "address": {
+            "addressLine1": "3700 Wailea Alanui",
+            "cityName": "Wailea",
+            "cityCode": "OGG",
+            "stateProvinceCode": "HI",
+            "postalCode": "96753",
+            "countryName": "United States of America",
+            "countryCode": "US"
+          },
+          "contact": {
+            "phone": "808-879-1922",
+            "fax": "808-874-8331"
+          },
+          "amenities": [
+            "Complimentary in-room coffee or tea",
+            "Car rental desk",
+            "Lounges/bars",
+            "Onsite laundry",
+            "Transportation services - local area",
+            "Non-smoking rooms (generic)",
+            "Eco Friendly",
+            "Rooms with Balcony",
+            "Local Calls",
+            "In Room Safe",
+            "Rollaway adult",
+            "Crib charge",
+            "Extra person",
+            "Recreation Facilities",
+            "Dining Room",
+            "Exhibition/convention floor",
+            "Concierge desk",
+            "Business center",
+            "Tennis court",
+            "High speed internet access",
+            "Interior corridors",
+            "Meeting rooms",
+            "Children programs",
+            "Health club",
+            "Air conditioning",
+            "Outdoor pool",
+            "Pool",
+            "Restaurant",
+            "Room service",
+            "Spa",
+            "Dry cleaning",
+            "Parking"
+          ]
+        },
+        "rateDetails": {
+          "startDate": "2026-08-05",
+          "endDate": "2026-08-10",
+          "averageNightlyRate": 864.7,
+          "approxTotalPrice": 4323.49,
+          "areAdditionalFeesInclusive": true,
+          "isTaxInclusive": true,
+          "commissionType": "Variable",
+          "rateSource": "100",
+          "rateKey": "EeexdX5eHN8UcOtHm2lPum/WrZZSC1mU4aHC/qX0adGPyIHZn1JpaMs7Yr1EsGpSd0pjyfYq1XKKAZjLXH6yu5xORDgC46Y8eqPE2KcAD1vajPDn5GtVrJcozXr9Y6yYADJBfOqMxLzv42dPr2vkHzG6smTTjs7gIS9dWg5iHTyjlz7aa6ILP5JwPh8BNeWmKV2gebDk2iQRTBTBX2vSo1HasqhKBqiFwIwsbeM8hb7qfM1fGP50ujauuoDVUVr2Vr0e2eYrp7IiyxXyikfCfyvSWL/cGNS0gccCLhfKh4oU8QtuAngSs/pbqFqYoTAXle5f/aASqvov2gZxAwmkMvsh4UUK6utZ1uY4i2gA0wS/p9HRbZ1NRYuOv4lIQ+r+ySsVgI0ny4E8CVmrLWePNdUd9+23tmq0vWER+3ttaw42L5xKXiNFcmdJUalXo/fSVH5tGMGf+ECiuxmibX/0UurVdRLlRH4plNwtAxmhMttL8ln2SxjVB7TTY9HZX/9UlPjPZ/QQI0AQFbO0DPCmlCEOour2eGsennep3Qb6kY93NOMFLcDKTAo+/k0mjlNgWFCzIWvtngepJm8YEHCOvuSSY1lNpYr7FvF8WDv2nQ1HihdmAQ9H011B7ABu1n1tkl15OjSk4GPlblVejXNhFPVuO2uC6Cij2gCGycLWlYGJxUdmMGTCLTi9Z46wleNziyBxXbGZ7NhJXes9y+bwnA==",
+          "currencyCode": "USD"
+        },
+        "rooms": [
+          {
+            "roomIndex": 1,
+            "nonSmoking": false,
+            "roomTypeCode": "42",
+            "roomTypeName": "Guest room",
+            "numberOfAdults": 2,
+            "numberOfChildren": 0,
+            "roomViewDescription": "Garden view",
+            "bedTypes": [
+              {
+                "code": "3",
+                "name": "King",
+                "numberOfBeds": 1
+              }
+            ],
+            "roomDescription": {
+              "name": "STAY AND SAVE",
+              "text": "STAY 4 NIGHTS AND SAVE, GARDEN VIEW, GUEST ROOM, 1 KING, SOFA BED, BALCONY"
+            },
+            "amenities": [
+              "Sofa bed",
+              "Balcony/Lanai/Terrace"
+            ],
+            "ratePlans": [
+              {
+                "ratePlanName": "STAY AND SAVE",
+                "isRatePrepaid": false,
+                "limitedAvailability": false,
+                "rateSource": "100",
+                "rateKey": "EeexdX5eHN8UcOtHm2lPum/WrZZSC1mU4aHC/qX0adGPyIHZn1JpaMs7Yr1EsGpSd0pjyfYq1XKKAZjLXH6yu5xORDgC46Y8eqPE2KcAD1vajPDn5GtVrJcozXr9Y6yYADJBfOqMxLzv42dPr2vkHzG6smTTjs7gIS9dWg5iHTyjlz7aa6ILP5JwPh8BNeWmKV2gebDk2iQRTBTBX2vSo1HasqhKBqiFwIwsbeM8hb7qfM1fGP50ujauuoDVUVr2Vr0e2eYrp7IiyxXyikfCfyvSWL/cGNS0gccCLhfKh4oU8QtuAngSs/pbqFqYoTAXle5f/aASqvov2gZxAwmkMvsh4UUK6utZ1uY4i2gA0wS/p9HRbZ1NRYuOv4lIQ+r+ySsVgI0ny4E8CVmrLWePNdUd9+23tmq0vWER+3ttaw42L5xKXiNFcmdJUalXo/fSVH5tGMGf+ECiuxmibX/0UurVdRLlRH4plNwtAxmhMttL8ln2SxjVB7TTY9HZX/9UlPjPZ/QQI0AQFbO0DPCmlCEOour2eGsennep3Qb6kY93NOMFLcDKTAo+/k0mjlNgWFCzIWvtngepJm8YEHCOvuSSY1lNpYr7FvF8WDv2nQ1HihdmAQ9H011B7ABu1n1tkl15OjSk4GPlblVejXNhFPVuO2uC6Cij2gCGycLWlYGJxUdmMGTCLTi9Z46wleNziyBxXbGZ7NhJXes9y+bwnA==",
+                "productCode": "SLPC00",
+                "rateDetails": {
+                  "startDate": "2026-08-05",
+                  "endDate": "2026-08-10",
+                  "averageNightlyRate": 864.7,
+                  "approxTotalPrice": 4323.49,
+                  "areAdditionalFeesInclusive": true,
+                  "isTaxInclusive": true,
+                  "rates": [
+                    {
+                      "startDate": "2026-08-05",
+                      "endDate": "2026-08-07",
+                      "amountBeforeTax": 655.0
+                    },
+                    {
+                      "startDate": "2026-08-07",
+                      "endDate": "2026-08-09",
+                      "amountBeforeTax": 711.0
+                    },
+                    {
+                      "startDate": "2026-08-09",
+                      "endDate": "2026-08-10",
+                      "amountBeforeTax": 615.0
+                    }
+                  ],
+                  "taxes": {
+                    "amount": 681.49,
+                    "tax": [
+                      {
+                        "startDate": "2026-08-05",
+                        "endDate": "2026-08-07",
+                        "amount": 133.6
+                      },
+                      {
+                        "startDate": "2026-08-07",
+                        "endDate": "2026-08-09",
+                        "amount": 59.0
+                      },
+                      {
+                        "startDate": "2026-08-09",
+                        "endDate": "2026-08-10",
+                        "amount": 118.0
+                      }
+                    ]
+                  },
+                  "fees": {
+                    "amount": 295.0,
+                    "fee": [
+                      {
+                        "startDate": "2026-08-05",
+                        "endDate": "2026-08-07",
+                        "amount": 59.0
+                      },
+                      {
+                        "startDate": "2026-08-07",
+                        "endDate": "2026-08-09",
+                        "amount": 144.08
+                      },
+                      {
+                        "startDate": "2026-08-09",
+                        "endDate": "2026-08-10",
+                        "amount": 118.0
+                      }
+                    ]
+                  },
+                  "roomExtras": [
+                    {
+                      "description": "Extra adult charge",
+                      "amount": 75.0
+                    },
+                    {
+                      "description": "Rollaway bed",
+                      "amount": 0.0
+                    },
+                    {
+                      "description": "Cribs",
+                      "amount": 0.0
+                    }
+                  ],
+                  "cancelPenalties": [
+                    {
+                      "refundable": true,
+                      "deadline": {
+                        "offsetTimeUnit": "Day",
+                        "offsetUnitMultiplier": 21
+                      }
+                    }
+                  ],
+                  "guarantee": {
+                    "guaranteeType": "GUAR",
+                    "guaranteesAccepted": [
+                      {
+                        "guaranteeType": "Credit card",
+                        "paymentCards": [
+                          {
+                            "cardCode": "DS",
+                            "cardName": "DISCOVER CARD"
+                          },
+                          {
+                            "cardCode": "IK",
+                            "cardName": "MASTER CARD"
+                          },
+                          {
+                            "cardCode": "AX",
+                            "cardName": "AMERICAN EXPRESS"
+                          },
+                          {
+                            "cardCode": "DC",
+                            "cardName": "DINERS CLUB CARD"
+                          },
+                          {
+                            "cardCode": "VI",
+                            "cardName": "VISA"
+                          },
+                          {
+                            "cardCode": "CA",
+                            "cardName": "MASTERCARD"
+                          },
+                          {
+                            "cardCode": "JC",
+                            "cardName": "JCB CREDIT CARD"
+                          },
+                          {
+                            "cardCode": "VS",
+                            "cardName": "VISA"
+                          },
+                          {
+                            "cardCode": "MC",
+                            "cardName": "MASTER CARD"
+                          }
+                        ]
+                      },
+                      {
+                        "guaranteeType": "Travel agency IATA number"
+                      }
+                    ]
+                  },
+                  "currencyCode": "USD"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "hotel": {
+          "hotelCode": "100089636",
+          "hotelName": "Grand Wailea",
+          "logo": "http://vcmp-hotels.cert.sabre.com/image/upload/f_auto,q_auto:best,t_vcmp_logo/v1547568381/hotel/l/wa/WA.png",
+          "latitude": 20.682253,
+          "longitude": -156.440157,
+          "address": {
+            "addressLine1": "3850 Wailea Alanui Drive",
+            "cityName": "Wailea",
+            "cityCode": "OGG",
+            "stateProvinceCode": "HI",
+            "postalCode": "96753",
+            "countryName": "United States of America",
+            "countryCode": "US"
+          },
+          "contact": {
+            "phone": "1-808-875-1234",
+            "fax": "1-808-879-4077"
+          },
+          "amenities": [
+            "Wheelchair access",
+            "Car rental desk",
+            "Non-smoking rooms (generic)",
+            "Eco Friendly",
+            "Rollaway adult",
+            "Crib charge",
+            "Extra person",
+            "Recreation Facilities",
+            "Dining Room",
+            "Business center",
+            "Tennis court",
+            "Golf",
+            "Beachfront",
+            "High speed internet access",
+            "Interior corridors",
+            "Kitchenette",
+            "Meeting rooms",
+            "Children programs",
+            "Executive floor",
+            "Health club",
+            "Air conditioning",
+            "Outdoor pool",
+            "Pool",
+            "Room service",
+            "Dry cleaning",
+            "Parking",
+            "Free Parking"
+          ]
+        },
+        "imageUrl": "https://media.iceportal.com/59818/photos/90437771_XXL.jpg",
+        "rateDetails": {
+          "startDate": "2026-08-05",
+          "endDate": "2026-08-10",
+          "averageNightlyRate": 1215.61,
+          "approxTotalPrice": 6078.05,
+          "areAdditionalFeesInclusive": true,
+          "isTaxInclusive": true,
+          "commissionType": "Percentage",
+          "rateSource": "100",
+          "rateKey": "kIbc9lCYUpdpxqjj1ZR9pTu8LcuuY5E5uyXcnpBCIqLo6BU7WARJ81H6/fdYFOqusNbzAsLGqlHv/MCs6SptZH2sMQHoAZvsVBstsaZL1S1kB0Rz+CJrMhrzbo79Px7fyo26+8vYS0PEh6jQQi8fQ0qCvYAuqvhO87lUnlAI/UenZhiYRH/DBPb+VmCH1X4i40bYJwdmJeeI5a/fSaAiEihRVvOQQ+KLF2CV6aSC6RCgXTyGZTMDB6KsAKkqlWeB1Z5i2PDvV42yI9PU1MEspcAhjIc2Ks/HNaXZ7yGm3nNNe5KcLpC0WuLRoSzdiPhb0CWGH/dxWnzuTi5E6uA2bYnntCEQmInq2YTbNUUnyq4ROsida43wu43aBPqi+MHrvYzg1JrvgcvlCta18tqT4MaWT4CICyT0QDr2iTeFPMjT/tzk+keGW3IFcyqDKvM2pFSNrhekiIQFVEEqVCfjGCafZ0+z8+SN+oQRoX8k9fpSBB/lyQEBetjtomBaecy3yy3T7gJI0pm7EdaepzWFWLvPE70/rfLa6uzcYiqkdPYPqrTNcGrEW/aCT6rkacgsr2oxmRvUUn5OltkBjq4hdLzUcK7D8V5inrOehDVw9AzE0j/AUfBm7Mh4ycz5YrGepFxgXVJcro1FpRqDW+kz9tdvGlQ56KJKTe6brO5fN/pWbj9j2lVw0tBeQf45iq7k",
+          "currencyCode": "USD"
+        },
+        "rooms": [
+          {
+            "roomIndex": 1,
+            "nonSmoking": false,
+            "roomTypeName": "TERRACE VIEW - 1 KING BED 55USD RSRT CHG-VIEWS OF MOUNT HALEAKALA ACCOMMODATIONS AVERAGING 640 SQ FT. OF SPACE",
+            "numberOfAdults": 2,
+            "bedTypes": [
+              {
+                "code": "3",
+                "name": "King",
+                "numberOfBeds": 1
+              }
+            ],
+            "roomDescription": {
+              "name": "FLEXIBLE RATE",
+              "text": "FLEXIBLE RATE"
+            },
+            "amenities": [
+              "Balcony/Lanai/Terrace"
+            ],
+            "ratePlans": [
+              {
+                "ratePlanName": "FLEXIBLE RATE",
+                "ratePlanCode": "LV0",
+                "ratePlanType": "TERRACE VIEW - 1 KING BED 55USD RSRT CHG-VIEWS OF MOUNT HALEAKALA ACCOMMODATIONS AVERAGING 640 SQ FT. OF SPACE",
+                "isRatePrepaid": false,
+                "limitedAvailability": false,
+                "rateSource": "100",
+                "rateKey": "kIbc9lCYUpdpxqjj1ZR9pTu8LcuuY5E5uyXcnpBCIqLo6BU7WARJ81H6/fdYFOqusNbzAsLGqlHv/MCs6SptZH2sMQHoAZvsVBstsaZL1S1kB0Rz+CJrMhrzbo79Px7fyo26+8vYS0PEh6jQQi8fQ0qCvYAuqvhO87lUnlAI/UenZhiYRH/DBPb+VmCH1X4i40bYJwdmJeeI5a/fSaAiEihRVvOQQ+KLF2CV6aSC6RCgXTyGZTMDB6KsAKkqlWeB1Z5i2PDvV42yI9PU1MEspcAhjIc2Ks/HNaXZ7yGm3nNNe5KcLpC0WuLRoSzdiPhb0CWGH/dxWnzuTi5E6uA2bYnntCEQmInq2YTbNUUnyq4ROsida43wu43aBPqi+MHrvYzg1JrvgcvlCta18tqT4MaWT4CICyT0QDr2iTeFPMjT/tzk+keGW3IFcyqDKvM2pFSNrhekiIQFVEEqVCfjGCafZ0+z8+SN+oQRoX8k9fpSBB/lyQEBetjtomBaecy3yy3T7gJI0pm7EdaepzWFWLvPE70/rfLa6uzcYiqkdPYPqrTNcGrEW/aCT6rkacgsr2oxmRvUUn5OltkBjq4hdLzUcK7D8V5inrOehDVw9AzE0j/AUfBm7Mh4ycz5YrGepFxgXVJcro1FpRqDW+kz9tdvGlQ56KJKTe6brO5fN/pWbj9j2lVw0tBeQf45iq7k",
+                "productCode": "A00LV0",
+                "rateDetails": {
+                  "startDate": "2026-08-05",
+                  "endDate": "2026-08-10",
+                  "averageNightlyRate": 1215.61,
+                  "approxTotalPrice": 6078.05,
+                  "areAdditionalFeesInclusive": true,
+                  "isTaxInclusive": true,
+                  "rates": [
+                    {
+                      "startDate": "2026-08-05",
+                      "endDate": "2026-08-10",
+                      "amountBeforeTax": 969.0
+                    }
+                  ],
+                  "taxes": {
+                    "amount": 958.05
+                  },
+                  "fees": {
+                    "amount": 275.0
+                  },
+                  "roomExtras": [
+                    {
+                      "description": "Cribs",
+                      "amount": 0.0
+                    },
+                    {
+                      "description": "Rollaway bed",
+                      "amount": 50.0
+                    },
+                    {
+                      "description": "Extra adult charge",
+                      "amount": 100.0
+                    }
+                  ],
+                  "cancelPenalties": [
+                    {
+                      "refundable": true,
+                      "deadline": {
+                        "absoluteDeadline": "2026-07-23T00:00:00-10:00"
+                      },
+                      "amountPercent": {
+                        "amount": 2431.22,
+                        "currencyCode": "USD"
+                      }
+                    }
+                  ],
+                  "guarantee": {
+                    "guaranteeType": "DEP",
+                    "guaranteesAccepted": [
+                      {
+                        "guaranteeType": "Credit card",
+                        "paymentCards": [
+                          {
+                            "cardCode": "AX",
+                            "cardName": "AMERICAN EXPRESS"
+                          },
+                          {
+                            "cardCode": "CA",
+                            "cardName": "MASTERCARD"
+                          },
+                          {
+                            "cardCode": "DC",
+                            "cardName": "DINERS CLUB CARD"
+                          },
+                          {
+                            "cardCode": "DS",
+                            "cardName": "DISCOVER CARD"
+                          },
+                          {
+                            "cardCode": "IK",
+                            "cardName": "MASTER CARD"
+                          },
+                          {
+                            "cardCode": "JC",
+                            "cardName": "JCB CREDIT CARD"
+                          },
+                          {
+                            "cardCode": "MC",
+                            "cardName": "MASTER CARD"
+                          },
+                          {
+                            "cardCode": "NA",
+                            "cardName": "NONE ACCEPTED"
+                          },
+                          {
+                            "cardCode": "VI",
+                            "cardName": "VISA"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "currencyCode": "USD"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

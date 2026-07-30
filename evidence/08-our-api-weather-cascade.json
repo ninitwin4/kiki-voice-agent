@@ -1,0 +1,110 @@
+{
+  "captured_at_utc": "2026-07-30T03:08:02+00:00",
+  "note": "Our POST /trip/rebook: the November->August weather cascade re-dating and re-pricing flights, hotel, transport and activities in one call.",
+  "response": {
+    "confirmed": true,
+    "message": "Moved the whole trip from november to first week of August (2026-08-05 to 2026-08-10). Flights, hotel, minivan, and both activities are re-dated and re-priced \u2014 new total 11460.00 USD, saving -2290.00.",
+    "previous_month": "november",
+    "month": "august",
+    "dates": {
+      "start": "2026-08-05",
+      "end": "2026-08-10",
+      "nights": 5,
+      "label": "first week of August",
+      "season": "dry"
+    },
+    "savings": -2290.0,
+    "flights": {
+      "status": "NOT_BOOKED",
+      "tier": null,
+      "flight_id": null,
+      "carrier": null,
+      "flight_no": null,
+      "depart_time": null,
+      "arrive_time": null,
+      "stops": null,
+      "price_pp": null,
+      "total_price": null,
+      "return_flight_no": null,
+      "return_depart_time": null,
+      "return_arrive_time": null,
+      "tradeoff": null,
+      "record_locator": null
+    },
+    "hotel": {
+      "status": "NOT_BOOKED",
+      "name": "The Westin Maui Resort & Spa, Ka'anapali",
+      "room_type": "Ocean-view double queen",
+      "rooms": 2,
+      "check_in": "2026-08-05",
+      "check_out": "2026-08-10",
+      "nightly_rate": 620.0,
+      "nights": 5,
+      "total": 6200.0,
+      "note": "Dry-season rates run higher, but the first week of August is warm and clear.",
+      "confirmation_number": null
+    },
+    "transport": {
+      "status": "NOT_BOOKED",
+      "provider": "Maui Family Car Rentals",
+      "vehicle": "Toyota Sienna minivan (seats 7)",
+      "pickup_location": "OGG \u2014 Kahului Airport",
+      "pickup_date": "2026-08-05",
+      "dropoff_date": "2026-08-10",
+      "car_seat": true,
+      "car_seat_fee_per_day": 9.0,
+      "daily_rate": 89.0,
+      "days": 5,
+      "total": 490.0,
+      "note": "One minivan for all 5, plus a forward-facing child car seat.",
+      "confirmation_number": null
+    },
+    "activities": {
+      "status": "NOT_BOOKED",
+      "items": [
+        {
+          "activity_id": "surf",
+          "name": "Beginner group surfing lesson",
+          "provider": "Maui Surf School \u2014 Lahaina",
+          "kid_friendly": true,
+          "date": "2026-08-06",
+          "time": "09:00",
+          "duration": "2h",
+          "price_pp": 95.0,
+          "participants": 5,
+          "total": 475.0,
+          "note": "Beginner group lesson; instructors certified for ages 5+. Boards and rash guards included.",
+          "status": "NOT_BOOKED",
+          "confirmation_number": null
+        },
+        {
+          "activity_id": "snorkel",
+          "name": "Molokini Crater snorkeling tour",
+          "provider": "Molokini Express \u2014 Ma'alaea Harbor",
+          "kid_friendly": true,
+          "date": "2026-08-08",
+          "time": "07:00",
+          "duration": "4h 30m",
+          "price_pp": 139.0,
+          "participants": 5,
+          "total": 695.0,
+          "note": "Morning catamaran to the crater; calm, clear water in August.",
+          "status": "NOT_BOOKED",
+          "confirmation_number": null
+        }
+      ]
+    },
+    "totals": {
+      "currency": "USD",
+      "flights": 3600.0,
+      "hotel": 6200.0,
+      "transport": 490.0,
+      "activities": 1170.0,
+      "trip_total": 11460.0,
+      "budget": 12000.0,
+      "over_budget_by": 0.0,
+      "within_budget": true,
+      "flights_quoted": true
+    }
+  }
+}
