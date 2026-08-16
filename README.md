@@ -10,6 +10,8 @@ re-dates and re-prices flights, hotel, minivan, and activities together.
 Three sponsors are integrated for real: **Vocal Bridge** (voice), **Sabre** (live
 flight fares, seasonality, and Maui hotels), and **PayPal** (sandbox payment).
 
+▶ **[Watch the 2-minute demo](https://www.youtube.com/watch?v=K8ZU7JA9WYs&t=1s)**
+
 ```
 FastAPI backend ──(9 tools + /token)──► Kiki (Vocal Bridge) ──(client actions)──► React UI
    the kitchen                              the waiter                              the table
