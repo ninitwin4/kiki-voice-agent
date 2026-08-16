@@ -5,5 +5,17 @@ __pycache__/
 .DS_Store
 
 # Secrets — real Sabre / PayPal credentials. NEVER commit.
+# (matches at any depth, so frontend/.env is covered too)
 .env
 .env.local
+
+# Frontend (Vite + React) — deps and build output
+node_modules/
+dist/
+dist-ssr/
+*.tsbuildinfo
+.vite/
+*.local
+
+# Per-machine Claude Code settings
+.claude/settings.local.json
