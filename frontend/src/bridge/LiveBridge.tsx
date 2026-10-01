@@ -77,6 +77,7 @@ function LiveSession({
   const { onAction: onAgentAction, lastAction } = useAgentActions()
   const wantConnected = useStore((s) => s.wantConnected)
   const connectNonce = useStore((s) => s.connectNonce)
+  const micMuted = useStore((s) => s.micMuted)
   // The nonce we've already fired a connect() for — prevents an auto-reconnect
   // loop when a connect fails and the SDK drops back to `disconnected`.
   const attemptedNonce = useRef<number | null>(null)
@@ -191,7 +192,8 @@ function LiveSession({
       store.set({ connection: { status: 'connecting' }, orb: 'thinking' })
       connect()
         // A denied/absent mic must NOT drop a successful connection — swallow it.
-        .then(() => setMicrophoneEnabled(true).catch(() => undefined))
+        // Respect a mute set before the room came up, rather than forcing the mic on.
+        .then(() => setMicrophoneEnabled(!store.getSnapshot().micMuted).catch(() => undefined))
         .catch((e) => {
           store.set((s) =>
             s.connection.status === 'error'
@@ -201,6 +203,14 @@ function LiveSession({
         })
     }
   }, [connectNonce, wantConnected, state, connect, disconnect, setMicrophoneEnabled])
+
+  // --- 4b. Mute button -> SDK mic. Only meaningful once the room is up; the
+  //     connect() path above applies the initial state. Failures are swallowed
+  //     (same policy as a denied mic) so a mute never drops the call. ---
+  useEffect(() => {
+    if (state !== ConnectionState.Connected && state !== ConnectionState.WaitingForAgent) return
+    void setMicrophoneEnabled(!micMuted).catch(() => undefined)
+  }, [micMuted, state, setMicrophoneEnabled])
 
   // --- 5. App -> Agent: hand the emit fn up so the UI can talk back ---
   useEffect(() => {

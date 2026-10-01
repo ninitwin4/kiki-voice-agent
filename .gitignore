@@ -17,5 +17,8 @@ dist-ssr/
 .vite/
 *.local
 
+# Rendered demo videos (npm run record:demo) — large binaries, regenerate on demand
+demo-video/
+
 # Per-machine Claude Code settings
 .claude/settings.local.json

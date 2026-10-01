@@ -31,6 +31,7 @@ export default function App() {
   const constraints = useStore((s) => s.constraints)
   const transcript = useStore((s) => s.transcript)
   const connection = useStore((s) => s.connection)
+  const micMuted = useStore((s) => s.micMuted)
   const signalCount = useStore((s) => s.signalCount)
   const lastSignal = useStore((s) => s.lastSignal)
 
@@ -93,6 +94,11 @@ export default function App() {
     store.reset()
   }, [])
 
+  // Live: LiveBridge applies this to the SDK mic. Fake: there's no mic, so it's UI only.
+  const toggleMute = useCallback(() => {
+    store.set((s) => ({ micMuted: !s.micMuted }))
+  }, [])
+
   const retryConnect = useCallback(() => {
     store.set((s) => ({
       wantConnected: true,
@@ -135,6 +141,8 @@ export default function App() {
         resetKey={runKey}
         connection={connection}
         onRetry={retryConnect}
+        micMuted={micMuted}
+        onToggleMute={toggleMute}
       />
 
       <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
@@ -143,6 +151,7 @@ export default function App() {
         <KikiPanel
           screen={screen}
           orb={orb}
+          micMuted={micMuted}
           constraints={constraints}
           transcript={transcript}
           onAddKiki={enterCall}

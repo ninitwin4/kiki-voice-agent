@@ -38,18 +38,24 @@ const STATE_LABEL: Record<OrbState, string> = {
 export function KikiPanel({
   screen,
   orb,
+  micMuted = false,
   constraints,
   transcript,
   onAddKiki,
 }: {
   screen: 'A' | 'B'
   orb: OrbState
+  /** While muted, Kiki can't hear — so never claim "listening…". */
+  micMuted?: boolean
   constraints: Constraint[]
   transcript: TranscriptLine[]
   onAddKiki: () => void
 }) {
   const awake = orb !== 'idle'
-  const stateColor = orb === 'idle' ? 'var(--ghost-2)' : 'var(--royal-deep)'
+  // Kiki can still think and speak while you're muted; only "listening" is false.
+  const mutedListening = micMuted && orb === 'listening'
+  const stateColor = mutedListening ? 'var(--amber)' : orb === 'idle' ? 'var(--ghost-2)' : 'var(--royal-deep)'
+  const stateLabel = mutedListening ? '🔇 muted — Kiki can’t hear you' : STATE_LABEL[orb]
 
   return (
     <div
@@ -78,7 +84,7 @@ export function KikiPanel({
           <div style={{ height: 34, marginBottom: 9 }} />
         )}
         <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: stateColor, fontWeight: 700 }}>
-          {screen === 'A' ? 'resting…' : STATE_LABEL[orb]}
+          {screen === 'A' ? 'resting…' : stateLabel}
         </div>
       </div>
 

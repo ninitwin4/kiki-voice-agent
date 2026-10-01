@@ -25,6 +25,19 @@ const clockLabel: CSSProperties = {
   zIndex: 2,
 }
 
+const muteBtn = (muted: boolean): CSSProperties => ({
+  fontFamily: 'var(--mono)',
+  fontSize: 11,
+  fontWeight: 700,
+  color: muted ? 'var(--amber)' : 'var(--ink-soft)',
+  background: muted ? 'var(--amber-bg)' : '#fff',
+  padding: '4px 11px',
+  borderRadius: 3,
+  border: `2px solid ${muted ? 'var(--amber-line)' : 'var(--line)'}`,
+  cursor: 'pointer',
+  whiteSpace: 'nowrap',
+})
+
 const endBtn = (bg: string): CSSProperties => ({
   fontFamily: 'var(--mono)',
   fontSize: 11,
@@ -45,6 +58,8 @@ export function HeroStrip({
   resetKey = 0,
   connection = { status: 'idle' },
   onRetry,
+  micMuted = false,
+  onToggleMute,
 }: {
   screen: 'A' | 'B'
   trip: TripStatus | null
@@ -55,6 +70,9 @@ export function HeroStrip({
   connection?: ConnectionUI
   /** Retry a failed connect (live mode). */
   onRetry?: () => void
+  /** Mic mute state + toggle, shown while the call is up. */
+  micMuted?: boolean
+  onToggleMute?: () => void
 }) {
   const elapsed = useElapsed(screen === 'B', resetKey)
 
@@ -163,6 +181,17 @@ export function HeroStrip({
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--danger)', animation: 'kdot 1.4s infinite' }} />
               {elapsed}
             </span>
+            {onToggleMute && (
+              <button
+                onClick={onToggleMute}
+                style={muteBtn(micMuted)}
+                aria-pressed={micMuted}
+                aria-label={micMuted ? 'Unmute microphone' : 'Mute microphone'}
+                title={micMuted ? 'Kiki can’t hear you — click to unmute' : 'Mute your microphone'}
+              >
+                {micMuted ? '🔇 Muted' : '🎙 Mute'}
+              </button>
+            )}
             <button onClick={onEndCall} style={endBtn('var(--danger)')}>
               ✕ End call
             </button>

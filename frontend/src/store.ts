@@ -61,6 +61,8 @@ export interface UIState {
   transcript: TranscriptLine[]
   /** Live SDK connection status (fake mode leaves this 'idle'). */
   connection: ConnectionUI
+  /** User muted their mic. Live: LiveBridge applies it to the SDK. Fake: UI only. */
+  micMuted: boolean
   /** Intent flag the live bridge watches to connect/disconnect. */
   wantConnected: boolean
   /** Bumped to (re)trigger a connect attempt — makes retry deterministic. */
@@ -83,6 +85,7 @@ export const initialState: UIState = {
   payment: { state: 'idle' },
   transcript: [],
   connection: { status: 'idle' },
+  micMuted: false,
   wantConnected: false,
   connectNonce: 0,
   signalCount: 0,
